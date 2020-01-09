@@ -35,7 +35,7 @@ from dataclasses import dataclass
 import os
 import tempfile
 
-import build_specified_commit
+import utils
 import helper
 import repo_manager
 
@@ -120,7 +120,7 @@ def bisect(commit_old, commit_new, testcase, fuzz_target, build_data):
     ValueError: when a repo url can't be determine from the project
   """
   with tempfile.TemporaryDirectory() as tmp_dir:
-    repo_url, repo_name = build_specified_commit.detect_main_repo_from_commit(
+    repo_url, repo_name = utils.detect_main_repo_from_commit(
         build_data.project_name, commit_old)
     if not repo_url or not repo_name:
       raise ValueError('Main git repo can not be determined.')
@@ -130,7 +130,7 @@ def bisect(commit_old, commit_new, testcase, fuzz_target, build_data):
     old_idx = len(commit_list) - 1
     new_idx = 0
 
-    build_specified_commit.build_fuzzers_from_commit(
+    utils.build_fuzzers_from_commit(
         build_data.project_name,
         commit_list[new_idx],
         bisect_repo_manager,
@@ -142,7 +142,7 @@ def bisect(commit_old, commit_new, testcase, fuzz_target, build_data):
                                                 testcase)
 
     # Check if the error is persistent through the commit range
-    build_specified_commit.build_fuzzers_from_commit(
+    utils.build_fuzzers_from_commit(
         build_data.project_name,
         commit_list[old_idx],
         bisect_repo_manager,
@@ -158,7 +158,7 @@ def bisect(commit_old, commit_new, testcase, fuzz_target, build_data):
 
     while old_idx - new_idx > 1:
       curr_idx = (old_idx + new_idx) // 2
-      build_specified_commit.build_fuzzers_from_commit(
+      utils.build_fuzzers_from_commit(
           build_data.project_name,
           commit_list[curr_idx],
           bisect_repo_manager,
