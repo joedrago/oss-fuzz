@@ -1,4 +1,4 @@
-# Copyright 2019 Google LLC
+# Copyright 2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ def build_fuzzers_from_commit(project_name,
                               sanitizer='address',
                               architecture='x86_64'):
   """Builds a OSS-Fuzz fuzzer at a  specific commit SHA.
-
   Args:
     project_name: The OSS-Fuzz project name
     commit: The commit SHA to build the fuzzers at
@@ -36,7 +35,6 @@ def build_fuzzers_from_commit(project_name,
     engine: The fuzzing engine to be used
     sanitizer: The fuzzing sanitizer to be used
     architecture: The system architiecture to be used for fuzzing
-
   Returns:
     0 on successful build 1 on failure
   """
@@ -52,74 +50,51 @@ def build_fuzzers_from_commit(project_name,
       mount_location=os.path.join('/src', build_repo_manager.repo_name))
 
 
-def detect_main_repo_from_commit(project_name, example_commit, src_dir='/src'):
+def detect_main_repo(project_name, repo_name=None, commit=None, src_dir='/src'):
   """Checks a docker image for the main repo of an OSS-Fuzz project.
 
-  Args:
-    project_name: The name of the OSS-Fuzz project
-    example_commit: An associated commit SHA
-    src_dir: The location of the projects source on the docker image
-
-  Returns:
-    The repo's origin, the repo's name
-  """
-  if not helper.check_project_exists(project_name):
-    return None, None
-  helper.build_image_impl(project_name)
-  docker_image_name = 'gcr.io/oss-fuzz/' + project_name
-  command_to_run = [
-      'docker', 'run', '--rm', '-t', docker_image_name, 'python3',
-      os.path.join(src_dir, 'detect_repo.py'), '--src_dir', src_dir,
-      '--example_commit', example_commit
-  ]
-  out, _ = execute(command_to_run)
-  match = re.search(r'\bDetected repo: ([^ ]+) ([^ ]+)', out.rstrip())
-  if match and match.group(1) and match.group(2):
-    return match.group(1), match.group(2).rstrip()
-  return None, None
-
-
-def detect_main_repo_from_repo_name(project_name, repo_name, src_dir='/src'):
-  """Checks a docker image for the main repo of an OSS-Fuzz project.
+  Note: The default is to use the repo name to detect the main repo
 
   Args:
     project_name: The name of the oss-fuzz project
     repo_name: The name of the main repo in an OSS-Fuzz project
+    commit: A commit SHA that is associated with the main repo
     src_dir: The location of the projects source on the docker image
-
   Returns:
-    The repo's origin, the repo's name
+    If found: The repo's origin, the repo's name
+    If not found: None, None
   """
-  if not helper.check_project_exists(project_name):
+  if not repo_name and not commit:
+    print('Error can not detect main repo without a repo_name or a commit')
     return None, None
 
-  # Requried to avoid caching of base builder image.
-  helper.build_image_impl('base-builder')
+  if repo_name:
+    helper.build_image_impl('base-builder')
   helper.build_image_impl(project_name)
   docker_image_name = 'gcr.io/oss-fuzz/' + project_name
   command_to_run = [
       'docker', 'run', '--rm', '-t', docker_image_name, 'python3',
-      os.path.join(src_dir, 'detect_repo.py'), '--src_dir', src_dir,
-      '--repo_name', repo_name
-  ]
+      os.path.join(src_dir, 'detect_repo.py'), '--src_dir', src_dir]
+  if repo_name:
+    command_to_run.extend(['--repo_name', repo_name])
+  else:
+    command_to_run.extend(['--example_commit', commit])
   out, _ = execute(command_to_run)
   match = re.search(r'\bDetected repo: ([^ ]+) ([^ ]+)', out.rstrip())
   if match and match.group(1) and match.group(2):
-    return match.group(1), match.group(2).rstrip()
+    return match.group(1), match.group(2)
+  print("No main repo was found.")
   return None, None
 
 
 def execute(command, location=None, check_result=False):
   """ Runs a shell command in the specified directory location.
-
   Args:
     command: The command as a list to be run
     location: The directory the command is run in
     check_result: Should an exception be thrown on failed command
-
   Returns:
     The stdout of the command, the error code
-
   Raises:
     RuntimeError: running a command resulted in an error
   """
