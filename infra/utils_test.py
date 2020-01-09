@@ -26,7 +26,7 @@ import helper
 import repo_manager
 
 # Necessary because __file__ changes with os.chdir
-TEST_DIR_PATH = os.path.join(utils.OSS_FUZZ_HOME, 'infra','testcases')
+TEST_DIR_PATH = os.path.join(utils.OSS_FUZZ_HOME, 'infra', 'testcases')
 
 
 class BuildFuzzersTest(unittest.TestCase):
@@ -94,13 +94,11 @@ class DetectMainRepoTest(unittest.TestCase):
 
   def test_detect_main_repo_from_name(self):
     """Test the detect main repo functionality of the build specific commit module."""
-    repo_origin, repo_name = utils.detect_main_repo(
-        'curl', repo_name='curl')
+    repo_origin, repo_name = utils.detect_main_repo('curl', repo_name='curl')
     self.assertEqual(repo_origin, 'https://github.com/curl/curl.git')
     self.assertEqual(repo_name, 'curl')
 
-    repo_origin, repo_name = utils.detect_main_repo(
-        'yara', repo_name='yara')
+    repo_origin, repo_name = utils.detect_main_repo('yara', repo_name='yara')
     self.assertEqual(repo_origin, 'https://github.com/VirusTotal/yara.git')
     self.assertEqual(repo_name, 'yara')
 
@@ -109,8 +107,7 @@ class DetectMainRepoTest(unittest.TestCase):
     self.assertEqual(repo_origin, 'https://github.com/weinrank/usrsctp')
     self.assertEqual(repo_name, 'usrsctp')
 
-    repo_origin, repo_name = utils.detect_main_repo(
-        'ndpi', repo_name='nDPI')
+    repo_origin, repo_name = utils.detect_main_repo('ndpi', repo_name='nDPI')
     self.assertEqual(repo_origin, 'https://github.com/ntop/nDPI.git')
     self.assertEqual(repo_name, 'ndpi')
 
