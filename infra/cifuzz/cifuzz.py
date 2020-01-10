@@ -82,12 +82,9 @@ def build_fuzzers(args):
 
 
 def run_fuzzers(args):
-  """Runs a all fuzzer for a specific OSS-Fuzz project.
-
-  Returns:
-    True on successful fuzzer run or False on failure
-  """
-  return True
+  """Runs a all fuzzer for a specific OSS-Fuzz project."""
+  # TODO: Implement this function
+  return 0
 
 
 if __name__ == '__main__':
