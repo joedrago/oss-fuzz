@@ -20,7 +20,11 @@ Eventually it will be used to help CI tools determine which fuzzers to run.
 
 import argparse
 import os
+import sys
 import tempfile
+
+# Adds access to repo_manager and utils
+sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 import repo_manager
 import utils
