@@ -35,19 +35,19 @@ class RepoManager(object):
   """Class to manage git repos from python.
 
   Attributes:
-    repo_url: The location of the git repo
-    base_dir: The location of where the repo clone is stored locally
-    repo_name: The name of the github project
-    repo_dir: The location of the main repo
+    repo_url: The location of the git repo.
+    base_dir: The location of where the repo clone is stored locally.
+    repo_name: The name of the github project.
+    repo_dir: The location of the main repo.
   """
 
   def __init__(self, repo_url, base_dir, repo_name=None):
     """Constructs a repo manager class.
 
     Args:
-      repo_url: The github url needed to clone
-      base_dir: The full filepath where the git repo is located
-      repo_name: The name of the directory the repo is cloned to
+      repo_url: The github url needed to clone.
+      base_dir: The full filepath where the git repo is located.
+      repo_name: The name of the directory the repo is cloned to.
     """
     self.repo_url = repo_url
     self.base_dir = base_dir
@@ -62,7 +62,7 @@ class RepoManager(object):
     """Creates a clone of the repo in the specified directory.
 
       Raises:
-        RepoManagerError if the repo was not able to be cloned
+        RepoManagerError if the repo was not able to be cloned.
     """
     if not os.path.exists(self.base_dir):
       os.makedirs(self.base_dir)
@@ -77,7 +77,7 @@ class RepoManager(object):
     """Test if the current repo dir is a git repo or not.
 
     Returns:
-      True if the current repo_dir is a valid git repo
+      True if the current repo_dir is a valid git repo.
     """
     git_path = os.path.join(self.repo_dir, '.git')
     return os.path.isdir(git_path)
@@ -86,13 +86,13 @@ class RepoManager(object):
     """Checks to see if a commit exists in the project repo.
 
     Args:
-      commit: The commit SHA you are checking
+      commit: The commit SHA you are checking.
 
     Returns:
-      True if the commit exits in the project
+      True if the commit exits in the project.
 
     Raises:
-      ValueException: an empty string was passed in as a commit
+      ValueException: an empty string was passed in as a commit.
     """
 
     # Handle the exception case, if empty string is passed execute will
@@ -108,7 +108,7 @@ class RepoManager(object):
     """Gets the current commit SHA of the repo.
 
     Returns:
-      The current active commit SHA
+      The current active commit SHA.
     """
     out, _ = utils.execute(['git', 'rev-parse', 'HEAD'],
                                                 self.repo_dir,
@@ -119,14 +119,14 @@ class RepoManager(object):
     """Gets the list of commits(inclusive) between the old and new commits.
 
     Args:
-      old_commit: The oldest commit to be in the list
-      new_commit: The newest commit to be in the list
+      old_commit: The oldest commit to be in the list.
+      new_commit: The newest commit to be in the list.
 
     Returns:
-      The list of commit SHAs from newest to oldest
+      The list of commit SHAs from newest to oldest.
 
     Raises:
-      RepoManagerError when commits dont exist
+      RepoManagerError when commits dont exist.
     """
 
     if not self.commit_exists(old_commit):
@@ -151,10 +151,10 @@ class RepoManager(object):
     """Checks out a specific commit from the repo.
 
     Args:
-      commit: The commit SHA to be checked out
+      commit: The commit SHA to be checked out.
 
     Raises:
-      RepoManagerError when checkout is not successful
+      RepoManagerError when checkout is not successful.
     """
     if not self.commit_exists(commit):
       raise RepoManagerError('Commit %s does not exist in current branch' %

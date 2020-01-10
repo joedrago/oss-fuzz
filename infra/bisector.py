@@ -45,10 +45,10 @@ class BuildData():
   """List of data requried for bisection of errors in OSS-Fuzz projects.
 
   Attributes:
-    project_name: The name of the OSS-Fuzz project that is being checked
-    engine: The fuzzing engine to be used
-    sanitizer: The sanitizer to be used
-    architecture: CPU architecture to build the fuzzer for
+    project_name: The name of the OSS-Fuzz project that is being checked.
+    engine: The fuzzing engine to be used.
+    sanitizer: The sanitizer to be used.
+    architecture: CPU architecture to build the fuzzer for.
   """
   project_name: str
   engine: str
@@ -60,9 +60,9 @@ def main():
   """Finds the commit SHA where an error was initally introduced."""
 
   # Change working directory so helper.py functions work
-  if os.getcwd() != utils.OSS_FUZZ_HOME:
-    os.chdir(utils.OSS_FUZZ_HOME)
-    
+  if os.getcwd() != helper.OSSFUZZ_DIR:
+    os.chdir(helper.OSSFUZZ_DIR)
+
   parser = argparse.ArgumentParser(
       description='git bisection for finding introduction of bugs')
 
@@ -108,21 +108,21 @@ def bisect(commit_old, commit_new, testcase, fuzz_target, build_data):
   specific error from a fuzz testcase.
 
   Args:
-    commit_old: The oldest commit in the error regression range
-    commit_new: The newest commit in the error regression range
-    testcase: The file path of the test case that triggers the error
-    fuzz_target: The name of the fuzzer to be tested
-    build_data: a class holding all of the input parameters for bisection
+    commit_old: The oldest commit in the error regression range.
+    commit_new: The newest commit in the error regression range.
+    testcase: The file path of the test case that triggers the error.
+    fuzz_target: The name of the fuzzer to be tested.
+    build_data: a class holding all of the input parameters for bisection.
 
   Returns:
-    The commit SHA that introduced the error or None
+    The commit SHA that introduced the error or None.
 
   Raises:
-    ValueError: when a repo url can't be determine from the project
+    ValueError: when a repo url can't be determine from the project.
   """
   with tempfile.TemporaryDirectory() as tmp_dir:
-    repo_url, repo_name = utils.detect_main_repo_from_commit(
-        build_data.project_name, commit_old)
+    repo_url, repo_name = utils.detect_main_repo(
+        build_data.project_name, commit=commit_old)
     if not repo_url or not repo_name:
       raise ValueError('Main git repo can not be determined.')
     bisect_repo_manager = repo_manager.RepoManager(

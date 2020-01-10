@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing perepo_managerissions and
 # limitations under the License.
-"""Utility's for OSS-Fuzz infrastructure ."""
+"""Utility's for OSS-Fuzz infrastructure."""
 
 import os
 import re
@@ -32,14 +32,14 @@ def build_fuzzers_from_commit(project_name,
                               architecture='x86_64'):
   """Builds a OSS-Fuzz fuzzer at a  specific commit SHA.
   Args:
-    project_name: The OSS-Fuzz project name
-    commit: The commit SHA to build the fuzzers at
-    build_repo_manager: The OSS-Fuzz project's repo manager to be built at
-    engine: The fuzzing engine to be used
-    sanitizer: The fuzzing sanitizer to be used
-    architecture: The system architiecture to be used for fuzzing
+    project_name: The OSS-Fuzz project name.
+    commit: The commit SHA to build the fuzzers at.
+    build_repo_manager: The OSS-Fuzz project's repo manager to be built at.
+    engine: The fuzzing engine to be used.
+    sanitizer: The fuzzing sanitizer to be used.
+    architecture: The system architiecture to be used for fuzzing.
   Returns:
-    True on successful build False on failure
+    True on successful build False on failure.
   """
   try:
     build_repo_manager.checkout_commit(commit)
@@ -62,16 +62,16 @@ def build_fuzzers_from_commit(project_name,
 def detect_main_repo(project_name, repo_name=None, commit=None, src_dir='/src'):
   """Checks a docker image for the main repo of an OSS-Fuzz project.
 
-  Note: The default is repo name to detect the main repo if both commit and repo_name are present
+  Note: The default is repo name to detect the main repo if both commit and repo_name are present.
 
   Args:
-    project_name: The name of the oss-fuzz project
-    repo_name: The name of the main repo in an OSS-Fuzz project
-    commit: A commit SHA that is associated with the main repo
-    src_dir: The location of the projects source on the docker image
+    project_name: The name of the oss-fuzz project.
+    repo_name: The name of the main repo in an OSS-Fuzz project.
+    commit: A commit SHA that is associated with the main repo.
+    src_dir: The location of the projects source on the docker image.
   Returns:
-    If found: The repo's origin, the repo's name
-    If not found: None, None
+    If found: The repo's origin, the repo's name.
+    If not found: None, None.
   """
   if not repo_name and not commit:
     print('Error can not detect main repo without a repo_name or a commit.')
@@ -104,13 +104,13 @@ def detect_main_repo(project_name, repo_name=None, commit=None, src_dir='/src'):
 def execute(command, location=None, check_result=False):
   """ Runs a shell command in the specified directory location.
   Args:
-    command: The command as a list to be run
-    location: The directory the command is run in
-    check_result: Should an exception be thrown on failed command
+    command: The command as a list to be run.
+    location: The directory the command is run in.
+    check_result: Should an exception be thrown on failed command.
   Returns:
-    The stdout of the command, the error code
+    The stdout of the command, the error code.
   Raises:
-    RuntimeError: running a command resulted in an error
+    RuntimeError: running a command resulted in an error.
   """
 
   if not location:

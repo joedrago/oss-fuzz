@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Test the functionality of the utils module.
-The will consist of the following functional tests
-  1. Building an OSS-Fuzz project's fuzzers from a specific commit
-  2. Detecting an OSS-Fuzz project's main repo
+The will consist of the following functional tests.
+  1. Building an OSS-Fuzz project's fuzzers from a specific commit.
+  2. Detecting an OSS-Fuzz project's main repo.
 """
 
 import os
@@ -26,7 +26,7 @@ import helper
 import repo_manager
 
 # Necessary because __file__ changes with os.chdir
-TEST_DIR_PATH = os.path.join(utils.OSS_FUZZ_HOME, 'infra', 'testcases')
+TEST_DIR_PATH = os.path.join(helper.OSSFUZZ_DIR, 'infra', 'testcases')
 
 
 class BuildFuzzersTest(unittest.TestCase):
@@ -121,6 +121,6 @@ class DetectMainRepoTest(unittest.TestCase):
 if __name__ == '__main__':
 
   # Change to oss-fuzz main directory so helper.py runs correctly
-  if os.getcwd() != utils.OSS_FUZZ_HOME:
-    os.chdir(utils.OSS_FUZZ_HOME)
+  if os.getcwd() != helper.OSSFUZZ_DIR:
+    os.chdir(helper.OSSFUZZ_DIR)
   unittest.main()

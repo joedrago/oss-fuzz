@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Module used by CI tools in order to interact with fuzzers.
-This module helps CI tools do the following
-  1. build fuzzers
-  2. run fuzzers
+This module helps CI tools do the following:
+  1. Build fuzzers.
+  2. Run fuzzers.
 Eventually it will be used to help CI tools determine which fuzzers to run.
 """
 
@@ -27,6 +27,7 @@ import tempfile
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 import repo_manager
+import helper
 import utils
 
 
@@ -48,8 +49,8 @@ def main():
   args = parser.parse_args()
 
   # Change to oss-fuzz main directory so helper.py runs correctly.
-  if os.getcwd() != utils.OSS_FUZZ_HOME:
-    os.chdir(utils.OSS_FUZZ_HOME)
+  if os.getcwd() != helper.OSSFUZZ_DIR:
+    os.chdir(helper.OSSFUZZ_DIR)
   if args.command == 'build_fuzzers':
     if build_fuzzers(args):
       print('Error building projects fuzzers.')

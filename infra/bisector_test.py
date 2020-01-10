@@ -20,10 +20,10 @@ import os
 import unittest
 
 import bisector
-import util
+import helper
 
 # Necessary because __file__ changes with os.chdir
-TEST_DIR_PATH = os.path.join(utils.OSS_FUZZ_HOME, 'infra', 'testcases')
+TEST_DIR_PATH = os.path.join(helper.OSSFUZZ_DIR, 'infra', 'testcases')
 
 
 class TestBisect(unittest.TestCase):
@@ -99,6 +99,6 @@ class TestBisect(unittest.TestCase):
 
 if __name__ == '__main__':
   # Change to oss-fuzz main directory so helper.py runs correctly.
-  if os.getcwd() != utils.OSS_FUZZ_HOME:
-    os.chdir(utils.OSS_FUZZ_HOME)
+  if os.getcwd() != helper.OSSFUZZ_DIR:
+    os.chdir(helper.OSSFUZZ_DIR)
   unittest.main()
