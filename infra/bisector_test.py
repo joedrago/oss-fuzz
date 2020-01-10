@@ -12,17 +12,18 @@
 # See the License for the specific language governing perepo_managerissions and
 # limitations under the License.
 """Test the functionality of bisection module.
-1) Test a known case where an error appears in a regression range
-2) Bisect can handle incorrect inputs
+1) Test a known case where an error appears in a regression range.
+2) Bisect can handle incorrect inputs.
 """
 
 import os
 import unittest
 
 import bisector
+import util
 
 # Necessary because __file__ changes with os.chdir
-TEST_DIR_PATH = os.path.dirname(os.path.realpath(__file__))
+TEST_DIR_PATH = os.path.join(utils.OSS_FUZZ_HOME, 'infra', 'testcases')
 
 
 class TestBisect(unittest.TestCase):
@@ -34,7 +35,7 @@ class TestBisect(unittest.TestCase):
                                     'x86_64')
     commit_old = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
     commit_new = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
-    testcase = os.path.join(TEST_DIR_PATH, 'testcases', 'usrsctp_test_data')
+    testcase = os.path.join(TEST_DIR_PATH, 'usrsctp_test_data')
     fuzz_target = 'fuzzer_connect'
     with self.assertRaises(ValueError):
       bisector.bisect(commit_old, commit_new, testcase, fuzz_target, build_data)
@@ -45,7 +46,7 @@ class TestBisect(unittest.TestCase):
     commit_new = 'dda418266c99ceab368d723facb52069cbb9c8d5'
     commit_old = 'df26f5f9c36e19cd503c0e462e9f72ad37b84c82'
     fuzz_target = 'curl_fuzzer_ftp'
-    testcase = os.path.join(TEST_DIR_PATH, 'testcases', 'curl_test_data')
+    testcase = os.path.join(TEST_DIR_PATH, 'curl_test_data')
     error_sha = bisector.bisect(commit_old, commit_new, testcase, fuzz_target,
                                 build_data)
     self.assertEqual(error_sha, 'df26f5f9c36e19cd503c0e462e9f72ad37b84c82')
@@ -57,7 +58,7 @@ class TestBisect(unittest.TestCase):
     commit_new = '458e49358f17ec58d65ab1c45cf299baaf3c98d1'
     commit_old = '5bd2a9b6658a3a6efa20bb9ad75bd39a44d71da6'
     fuzz_target = 'libarchive_fuzzer'
-    testcase = os.path.join(TEST_DIR_PATH, 'testcases', 'libarchive_test_data')
+    testcase = os.path.join(TEST_DIR_PATH, 'libarchive_test_data')
     error_sha = bisector.bisect(commit_old, commit_new, testcase, fuzz_target,
                                 build_data)
     self.assertEqual(error_sha, '840266712006de5e737f8052db920dfea2be4260')
@@ -67,7 +68,7 @@ class TestBisect(unittest.TestCase):
     build_data = bisector.BuildData('usrsctp', 'libfuzzer', 'address', 'x86_64')
     commit_old = '4886aaa49fb90e479226fcfc3241d74208908232'
     commit_new = 'c710749b1053978179a027973a3ea3bccf20ee5c'
-    testcase = os.path.join(TEST_DIR_PATH, 'testcases', 'usrsctp_test_data')
+    testcase = os.path.join(TEST_DIR_PATH, 'usrsctp_test_data')
     fuzz_target = 'fuzzer_connect'
     error_sha = bisector.bisect(commit_old, commit_new, testcase, fuzz_target,
                                 build_data)
@@ -78,7 +79,7 @@ class TestBisect(unittest.TestCase):
     build_data = bisector.BuildData('usrsctp', 'libfuzzer', 'address', 'x86_64')
     commit_old = 'c710749b1053978179a027973a3ea3bccf20ee5c'
     commit_new = 'c710749b1053978179a027973a3ea3bccf20ee5c'
-    testcase = os.path.join(TEST_DIR_PATH, 'testcases', 'usrsctp_test_data')
+    testcase = os.path.join(TEST_DIR_PATH, 'usrsctp_test_data')
     fuzz_target = 'fuzzer_connect'
     error_sha = bisector.bisect(commit_old, commit_new, testcase, fuzz_target,
                                 build_data)
@@ -89,7 +90,7 @@ class TestBisect(unittest.TestCase):
     build_data = bisector.BuildData('usrsctp', 'libfuzzer', 'address', 'x86_64')
     commit_old = '4886aaa49fb90e479226fcfc3241d74208908232'
     commit_new = '4886aaa49fb90e479226fcfc3241d74208908232'
-    testcase = os.path.join(TEST_DIR_PATH, 'testcases', 'usrsctp_test_data')
+    testcase = os.path.join(TEST_DIR_PATH, 'usrsctp_test_data')
     fuzz_target = 'fuzzer_connect'
     error_sha = bisector.bisect(commit_old, commit_new, testcase, fuzz_target,
                                 build_data)
@@ -98,6 +99,6 @@ class TestBisect(unittest.TestCase):
 
 if __name__ == '__main__':
   # Change to oss-fuzz main directory so helper.py runs correctly.
-  if os.getcwd() != os.path.dirname(TEST_DIR_PATH):
-    os.chdir(os.path.dirname(TEST_DIR_PATH))
+  if os.getcwd() != utils.OSS_FUZZ_HOME:
+    os.chdir(utils.OSS_FUZZ_HOME)
   unittest.main()

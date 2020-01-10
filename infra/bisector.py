@@ -58,10 +58,11 @@ class BuildData():
 
 def main():
   """Finds the commit SHA where an error was initally introduced."""
-  oss_fuzz_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-  if os.getcwd() != oss_fuzz_dir:
-    print('Changing directory to OSS-Fuzz home directory')
-    os.chdir(oss_fuzz_dir)
+
+  # Change working directory so helper.py functions work
+  if os.getcwd() != utils.OSS_FUZZ_HOME:
+    os.chdir(utils.OSS_FUZZ_HOME)
+    
   parser = argparse.ArgumentParser(
       description='git bisection for finding introduction of bugs')
 
