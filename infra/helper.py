@@ -715,31 +715,36 @@ def coverage(args):
   return exit_code
 
 
-def run_fuzzer(args):
+def run_fuzzer_impl(project_name, fuzzer_name, engine, sanitizer, envs, fuzzer_args):
   """Runs a fuzzer in the container."""
-  if not check_project_exists(args.project_name):
+  if not check_project_exists(project_name):
     return 1
 
-  if not _check_fuzzer_exists(args.project_name, args.fuzzer_name):
+  if not _check_fuzzer_exists(project_name, fuzzer_name):
     return 1
 
   env = [
-      'FUZZING_ENGINE=' + args.engine,
-      'SANITIZER=' + args.sanitizer,
+      'FUZZING_ENGINE=' + engine,
+      'SANITIZER=' + sanitizer,
       'RUN_FUZZER_MODE=interactive',
   ]
 
-  if args.e:
-    env += args.e
+  if envs:
+    env += envs
 
   run_args = _env_to_docker_args(env) + [
-      '-v', '%s:/out' % _get_output_dir(args.project_name),
+      '-v', '%s:/out' % _get_output_dir(project_name),
       '-t', 'gcr.io/oss-fuzz-base/base-runner',
       'run_fuzzer',
-      args.fuzzer_name,
-  ] + args.fuzzer_args
+      fuzzer_name,
+  ] + fuzzer_args
 
   return docker_run(run_args)
+
+
+def run_fuzzer(args):
+  """Runs a fuzzer in the container."""
+  return run_fuzzer_impl(args.project_name, args.fuzzer_name, args.engine, args.sanitizer, args.e, args.fuzzer_args)
 
 
 def reproduce(args):
