@@ -19,6 +19,7 @@ Eventually it will be used to help CI tools determine which fuzzers to run.
 """
 
 import argparse
+import logging
 import os
 import sys
 import tempfile
@@ -60,7 +61,7 @@ def main():
     return build_fuzzers(args) == 0
   if args.command == 'run_fuzzers':
     return run_fuzzers(args) == 0
-  print('Invalid argument option, use build_fuzzers or run_fuzzer.')
+  print('Invalid argument option, use build_fuzzers or run_fuzzer.', file=sys.stderr)
   return False
 
 
@@ -75,7 +76,7 @@ def build_fuzzers(args):
   with tempfile.TemporaryDirectory() as tmp_dir:
     inferred_url, repo_name = build_specified_commit.detect_main_repo(
         args.project_name, repo_name=args.repo_name)
-    print("repo_name {}".format(repo_name))
+    logging.debug('Building fuzzers for project: {}.'.format(args.project_name))
     build_repo_manager = repo_manager.RepoManager(inferred_url,
                                                   tmp_dir,
                                                   repo_name=repo_name)
@@ -90,18 +91,17 @@ def run_fuzzers(args):
     True on success False on failure.
   """
   fuzzer_paths = utils.get_project_fuzz_targets(args.project_name)
-  print(fuzzer_paths)
   fuzz_targets = []
   for fuzzer in fuzzer_paths:
     fuzz_targets.append(fuzz_target.FuzzTarget(args.project_name, fuzzer, 10))
 
   for target in fuzz_targets:
-    if not target.start():
-      print('Log Error: {} from {}.'.format(target.get_message(), target.target_path))
+    if target.start():
+      logging.debug('Fuzzer {0} discovered error: {1}.'.format(target.target_name, target.get_message()))
     else:
-      print('Log {} completed successfully'.format(target.target_path))
+      logging.debug('Fuzzer {} completed with no errors found.'.format(target.target_name))
     break
-  print('Log done.')
+  logging.debug('Fuzzers finished running.')
   return True
 
 
