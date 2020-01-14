@@ -20,11 +20,14 @@ Eventually it will be used to help CI tools determine which fuzzers to run.
 
 import argparse
 import os
+import sys
 import tempfile
 
 import build_specified_commit
+import fuzz_target
 import helper
 import repo_manager
+import datetime
 import utils
 
 
@@ -55,7 +58,7 @@ def main():
 
   if args.command == 'build_fuzzers':
     return build_fuzzers(args) == 0
-  if args.command == 'run_fuzzer':
+  if args.command == 'run_fuzzers':
     return run_fuzzers(args) == 0
   print('Invalid argument option, use build_fuzzers or run_fuzzer.')
   return False
@@ -72,6 +75,7 @@ def build_fuzzers(args):
   with tempfile.TemporaryDirectory() as tmp_dir:
     inferred_url, repo_name = build_specified_commit.detect_main_repo(
         args.project_name, repo_name=args.repo_name)
+    print("repo_name {}".format(repo_name))
     build_repo_manager = repo_manager.RepoManager(inferred_url,
                                                   tmp_dir,
                                                   repo_name=repo_name)
@@ -85,14 +89,19 @@ def run_fuzzers(args):
   Returns:
     True on success False on failure.
   """
-  fuzzer_paths = infra.get_project_fuzz_targets(args.project_name)
-  fuzzer_names = map(lambda x: x.split('/')[-1], fuzzer_paths)
-  for fuzzer in fuzzer_names:
-    helper.run_fuzzer_impl(project_name, fuzzer, 'libfuzzer', 'address', None, None)
+  fuzzer_paths = utils.get_project_fuzz_targets(args.project_name)
+  print(fuzzer_paths)
+  fuzz_targets = []
+  for fuzzer in fuzzer_paths:
+    fuzz_targets.append(fuzz_target.FuzzTarget(args.project_name, fuzzer, 10))
 
-  result = helper.run_fuzzer_impl(project_name, )
-
-  # TODO: Implement this function
+  for target in fuzz_targets:
+    if not target.start():
+      print('Log Error: {} from {}.'.format(target.get_message(), target.target_path))
+    else:
+      print('Log {} completed successfully'.format(target.target_path))
+    break
+  print('Log done.')
   return True
 
 

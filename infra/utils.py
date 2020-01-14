@@ -15,16 +15,18 @@
 
 import os
 import re
+import stat
 import sys
 
 import helper
+import utils
 
 ALLOWED_FUZZ_TARGET_EXTENSIONS = ['', '.exe']
 FUZZ_TARGET_SEARCH_STRING = 'LLVMFuzzerTestOneInput'
 VALID_TARGET_NAME = re.compile(r'^[a-zA-Z0-9_-]+$')
 
 
-def is_fuzz_target_local(file_path, file_handle=None):
+def is_fuzz_target_local(file_path):
   """Returns whether |file_path| is a fuzz target binary (local path)."""
   filename, file_extension = os.path.splitext(os.path.basename(file_path))
   if not VALID_TARGET_NAME.match(filename):
@@ -35,38 +37,19 @@ def is_fuzz_target_local(file_path, file_handle=None):
     # Ignore files with disallowed extensions (to prevent opening e.g. .zips).
     return False
 
-  if not file_handle and not os.path.exists(file_path):
-    # Ignore non-existant files for cases when we don't have a file handle.
+  if not os.path.exists(file_path):
     return False
 
   if filename.endswith('_fuzzer'):
     return True
-
-  # TODO(aarya): Remove this optimization if it does not show up significant
-  # savings in profiling results.
-  fuzz_target_name_regex = environment.get_value('FUZZER_NAME_REGEX')
-  if fuzz_target_name_regex:
-    return bool(re.match(fuzz_target_name_regex, filename))
 
   if os.path.exists(file_path) and not stat.S_ISREG(os.stat(file_path).st_mode):
     # Don't read special files (eg: /dev/urandom).
     logs.log_warn('Tried to read from non-regular file: %s.' % file_path)
     return False
 
-  # Use already provided file handle or open the file.
-  local_file_handle = file_handle or open(file_path, 'rb')
-
-  # TODO(metzman): Bound this call so we don't read forever if something went
-  # wrong.
-  result = utils.search_string_in_file(FUZZ_TARGET_SEARCH_STRING,
-                                       local_file_handle)
-
-  if not file_handle:
-    # If this local file handle is owned by our function, close it now.
-    # Otherwise, it is caller's responsibility.
-    local_file_handle.close()
-
-  return result
+  with open(file_path, 'rb') as file_handle:
+    return file_handle.read().find(FUZZ_TARGET_SEARCH_STRING.encode())
 
 
 def get_project_fuzz_targets(project_name):
