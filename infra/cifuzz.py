@@ -38,6 +38,7 @@ def main():
   Returns:
     True on success False on failure.
   """
+  logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', stream=sys.stdout, level=logging.DEBUG)
   parser = argparse.ArgumentParser(
       description='Help CI tools manage specific fuzzers.')
 
@@ -93,16 +94,20 @@ def run_fuzzers(args):
   fuzzer_paths = utils.get_project_fuzz_targets(args.project_name)
   fuzz_targets = []
   for fuzzer in fuzzer_paths:
-    fuzz_targets.append(fuzz_target.FuzzTarget(args.project_name, fuzzer, 10))
+    fuzz_targets.append(fuzz_target.FuzzTarget(args.project_name, fuzzer, 40))
+
+  error_detected = False
 
   for target in fuzz_targets:
-    if target.start():
-      logging.debug('Fuzzer {0} discovered error: {1}.'.format(target.target_name, target.get_message()))
+    test_case, stack_trace = target.start()
+    if not test_case or not stack_trace:
+      logging.debug('Fuzzer {} finished running.'.format(target.target_name))
     else:
-      logging.debug('Fuzzer {} completed with no errors found.'.format(target.target_name))
-    break
-  logging.debug('Fuzzers finished running.')
-  return True
+      error_detected = True
+      print("Fuzzer {} Detected Error: {}".format(target.target_name, stack_trace), file=sys.stderr)
+      print('Testcase location: ' + test_case)
+      break
+  return not error_detected
 
 
 if __name__ == '__main__':

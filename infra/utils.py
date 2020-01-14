@@ -40,6 +40,9 @@ def is_fuzz_target_local(file_path):
   if not os.path.exists(file_path):
     return False
 
+  if not os.access(file_path, os.X_OK):
+    return False
+
   if filename.endswith('_fuzzer'):
     return True
 

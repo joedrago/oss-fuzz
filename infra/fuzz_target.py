@@ -15,8 +15,11 @@
 import datetime
 import enum
 import logging
-import multiprocessing
+import subprocess
 import os
+import re
+import signal
+import sys
 import time
 
 import helper
@@ -27,10 +30,7 @@ class FuzzTarget():
   Attributes:
     project_name: The name of the OSS-Fuzz project this target is associated with.
     target_name: The name of the fuzz target.
-    output_message: The message the target sends as its status.
-    message_lock: A lock for the message object.
     duration: The length of time in seconds that the target should run.
-    process: The process running the target.
   """
 
   def __init__(self, project_name, target_path, duration):
@@ -41,55 +41,56 @@ class FuzzTarget():
       target_path: The location of the fuzz target binary.
       duration: The length of time  in seconds the target should run.
     """
+    logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', stream=sys.stdout, level=logging.DEBUG)
     self.target_name = target_path.split('/')[-1]
     self.duration = duration
     self.project_name = project_name
-    self.message_lock = multiprocessing.Lock()
-    self._set_message(None)
 
   def start(self):
     """Starts the fuzz target run for the length of time specifed by duration.
 
     Returns:
-      None if target ran out of time or Error message if target found an error.
+      (test_case, stack trace) if found or (None, None) on timeout or error.
     """
-    start_time = datetime.datetime.now()
-    end_time = start_time + datetime.timedelta(seconds=self.duration)
-    self.process = multiprocessing.Process(target=self._run_fuzzer)
-    self.process.start()
-    while datetime.datetime.now() < end_time:
-      if not self.process.is_alive():
-        break
-      time.sleep(.1)
-    if self.process.is_alive():
-      self.process.terminate()
-      self.process.join()
-    return self.get_message()
+    command = ['docker', 'run', '--rm', '--privileged']
 
-  def _run_fuzzer(self):
-    """Runs the fuzz target.
+    env = [
+        'FUZZING_ENGINE=libfuzzer',
+        'SANITIZER=address',
+        'RUN_FUZZER_MODE=interactive',
+    ]
+    run_args = helper._env_to_docker_args(env) + [
+        '-v', '%s:/out' % helper._get_output_dir(self.project_name),
+        '-t', 'gcr.io/oss-fuzz-base/base-runner',
+        'run_fuzzer',
+        self.target_name,
+    ]
 
-    Note: Intended to be run in a separate process.
-    """
-    logging.debug('Fuzzer {0} started on process {1}.'.format(self.target_name, os.getpid()))
-    return_code = helper.run_fuzzer_impl(self.project_name, self.target_name, 'libfuzzer', 'address', None, [])
-    self._set_message('Error occurred before fuzzer run finished.')
-    logging.debug('Fuzzer {} stopped before time up.'.format(self.target_name))
+    command.extend(run_args)
+    logging.debug('Running command: {}'.format(' '.join(command)))
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    try:
+      out, err = process.communicate(timeout=self.duration)
+    except subprocess.TimeoutExpired:
+      logging.debug('Fuzzer {} finished with timeout.'.format(self.target_name))
+      return None, None
+    output = out.decode('ascii')
+    test_case = self.get_test_case(output)
+    if not test_case:
+      print('Error no test case found in stack trace.', file=sys.stderr)
+      return None, None
+    return test_case, output
 
-  def _set_message(self, message_to_set):
-    """Synchronously sets the message attribute.
+  def get_test_case(self, error_string):
+    """Gets the file from a fuzzer run stack trace.
 
     Args:
-       message_to_set: The string to set the message to.
-    """
-    logging.debug('Setting {} message to {}.'.format(self.target_name, message_to_set))
-    self.message_lock.acquire()
-    self.message = message_to_set
-    self.message_lock.release()
+      error_string: The stack trace string containing the error.
 
-  def get_message(self):
-    """Synchronously gets the message of the fuzz target."""
-    self.message_lock.acquire()
-    message = self.message
-    self.message_lock.release()
-    return message
+    Returns:
+      The error testcase or None if not found
+    """
+    match = re.search(r'\bTest unit written to \.([^ ]+)', error_string.rstrip())
+    if match:
+      return os.path.join(helper.BUILD_DIR,'out', self.project_name, match.group(1))
+    return None
