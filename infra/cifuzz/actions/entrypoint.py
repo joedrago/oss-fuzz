@@ -43,11 +43,13 @@ def main():
       'python3', '/src/oss-fuzz/infra/cifuzz.py', 'run_fuzzers', project_name
   ]
   print('Running command: "{0}"'.format(' '.join(command)))
+  process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   try:
-    subprocess.check_call(command)
+    out, err = process.communicate()
   except subprocess.CalledProcessError as err:
     sys.stderr.write('Error running fuzzers: "{0}"'.format(str(err)))
     return err.returncode
+  print(out)
   print('Fuzzers ran successfully.')
   return 0
 
