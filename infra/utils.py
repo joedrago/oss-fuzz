@@ -74,6 +74,7 @@ def get_project_fuzz_targets(project_name):
   for root, _, files in os.walk(path):
     for filename in files:
       file_path = os.path.join(root, filename)
+      print(file_path)
       if is_fuzz_target_local(file_path):
         fuzz_target_paths.append(file_path)
 

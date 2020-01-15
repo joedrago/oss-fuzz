@@ -97,7 +97,7 @@ def run_fuzzers(args):
   fuzz_targets = []
   for fuzzer in fuzzer_paths:
     fuzz_targets.append(fuzz_target.FuzzTarget(args.project_name, fuzzer, 40))
-
+  print(fuzzer_paths)
   error_detected = False
 
   for target in fuzz_targets:
