@@ -21,6 +21,7 @@ Eventually it will be used to help CI tools determine which fuzzers to run.
 import argparse
 import logging
 import os
+import shutil
 import sys
 import tempfile
 
@@ -111,6 +112,7 @@ def run_fuzzers(args):
       error_detected = True
       print("Fuzzer {} Detected Error: {}".format(target.target_name, stack_trace), file=sys.stderr)
       print('Testcase location: ' + test_case)
+      shutil.move(test_case, '/tmp/testcase')
       break
   return not error_detected
 
