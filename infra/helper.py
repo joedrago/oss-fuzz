@@ -473,6 +473,7 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
       ]
     else:
       print('Source path: ', _get_absolute_path(source_path))
+      print('Mount location: ', _get_absolute_path(mount_location))
       command += [
           '-v',
           '%s:%s' % (_get_absolute_path(source_path), mount_location),
