@@ -426,7 +426,6 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
   """Build fuzzers."""
   if not build_image_impl(project_name, no_cache=no_cache):
     return 1
-
   project_out_dir = _get_output_dir(project_name)
   if clean:
     print('Cleaning existing build artifacts.')
@@ -485,8 +484,10 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
       '-t', 'gcr.io/oss-fuzz/%s' % project_name
   ]
   result_code = docker_run(command)
-  command = [  '-t', 'gcr.io/oss-fuzz/%s' % project_name, 'pwd' ]
+  command = [  '-t', 'gcr.io/oss-fuzz/%s' % project_name, 'ls', '/src/' ]
+  print('Before Error')
   docker_run(command)
+  print('After error')
   if result_code:
     print('Building fuzzers failed.')
     return result_code
