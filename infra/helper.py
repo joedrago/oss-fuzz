@@ -484,9 +484,8 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
       '-v', '%s:/work' % project_work_dir,
       '-t', 'gcr.io/oss-fuzz/%s' % project_name
   ]
-
   result_code = docker_run(command)
-  command = [  '-t', 'gcr.io/oss-fuzz/%s' % project_name, 'readlink',  '-f', 'bootstrap.sh' ]
+  command = [  '-t', 'gcr.io/oss-fuzz/%s' % project_name, 'pwd' ]
   docker_run(command)
   if result_code:
     print('Building fuzzers failed.')

@@ -51,8 +51,6 @@ def build_fuzzers_from_commit(project_name,
   if os.getcwd() != helper.OSSFUZZ_DIR:
     os.chdir(helper.OSSFUZZ_DIR)
 
-  print('CWD:', os.getcwd())
-
   build_repo_manager.checkout_commit(commit)
   return helper.build_fuzzers_impl(project_name=project_name,
                                    clean=True,
