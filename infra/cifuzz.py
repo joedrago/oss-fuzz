@@ -92,6 +92,7 @@ def run_fuzzers(args):
   Returns:
     True on success False on failure.
   """
+  print('Starting to run fuzzers.')
   fuzzer_paths = utils.get_project_fuzz_targets(args.project_name)
   fuzz_targets = []
   for fuzzer in fuzzer_paths:
@@ -100,9 +101,11 @@ def run_fuzzers(args):
   error_detected = False
 
   for target in fuzz_targets:
+    print('Fuzzer {} started running.'.format(target.target_name))
     test_case, stack_trace = target.start()
     if not test_case or not stack_trace:
       logging.debug('Fuzzer {} finished running.'.format(target.target_name))
+      print('Fuzzer {} finished running.'.format(target.target_name))
     else:
       error_detected = True
       print("Fuzzer {} Detected Error: {}".format(target.target_name, stack_trace), file=sys.stderr)
