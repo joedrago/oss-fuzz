@@ -342,7 +342,12 @@ def _workdir_from_dockerfile(project_name):
 
 def docker_run(run_args, print_output=True):
   """Call `docker run`."""
-  command = ['docker', 'run', '--rm', '-i', '--privileged']
+  command = ['docker', 'run', '--rm', '--privileged']
+
+  # Support environments with a TTY.
+  if sys.stdin.isatty():
+    command.append('-i')
+
   command.extend(run_args)
 
   print('Running:', _get_command_string(command))
@@ -453,9 +458,7 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
         'bash', '-c', 'cp -r /msan /work'])
     env.append('MSAN_LIBS_PATH=' + '/work/msan')
 
-  command = (
-      ['docker', 'run', '--rm', '-i', '--cap-add', 'SYS_PTRACE'] +
-      _env_to_docker_args(env))
+  command = ['--cap-add', 'SYS_PTRACE'] + _env_to_docker_args(env)
   if source_path:
     workdir = _workdir_from_dockerfile(project_name)
     if workdir == '/src':
@@ -478,13 +481,10 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
       '-t', 'gcr.io/oss-fuzz/%s' % project_name
   ]
 
-  print('Running:', _get_command_string(command))
-
-  try:
-    subprocess.check_call(command)
-  except subprocess.CalledProcessError:
-    print('Fuzzers build failed.', file=sys.stderr)
-    return 1
+  result_code = docker_run(command)
+  if result_code:
+    print('Building fuzzers failed.')
+    return result_code
 
   # Patch MSan builds to use instrumented shared libraries.
   if sanitizer == 'memory':
@@ -715,36 +715,31 @@ def coverage(args):
   return exit_code
 
 
-def run_fuzzer_impl(project_name, fuzzer_name, engine, sanitizer, envs, fuzzer_args):
+def run_fuzzer(args):
   """Runs a fuzzer in the container."""
-  if not check_project_exists(project_name):
+  if not check_project_exists(args.project_name):
     return 1
 
-  if not _check_fuzzer_exists(project_name, fuzzer_name):
+  if not _check_fuzzer_exists(args.project_name, args.fuzzer_name):
     return 1
 
   env = [
-      'FUZZING_ENGINE=' + engine,
-      'SANITIZER=' + sanitizer,
+      'FUZZING_ENGINE=' + args.engine,
+      'SANITIZER=' + args.sanitizer,
       'RUN_FUZZER_MODE=interactive',
   ]
 
-  if envs:
-    env += envs
+  if args.e:
+    env += args.e
 
   run_args = _env_to_docker_args(env) + [
-      '-v', '%s:/out' % _get_output_dir(project_name),
+      '-v', '%s:/out' % _get_output_dir(args.project_name),
       '-t', 'gcr.io/oss-fuzz-base/base-runner',
       'run_fuzzer',
-      fuzzer_name,
-  ] + fuzzer_args
+      args.fuzzer_name,
+  ] + args.fuzzer_args
 
   return docker_run(run_args)
-
-
-def run_fuzzer(args):
-  """Runs a fuzzer in the container."""
-  return run_fuzzer_impl(args.project_name, args.fuzzer_name, args.engine, args.sanitizer, args.e, args.fuzzer_args)
 
 
 def reproduce(args):
