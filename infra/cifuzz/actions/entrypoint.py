@@ -50,6 +50,7 @@ def main():
     sys.stderr.write('Error running fuzzers: "{0}"'.format(str(err)))
     return err.returncode
   print(out)
+  print(err)
   print('Fuzzers ran successfully.')
   return 0
 
