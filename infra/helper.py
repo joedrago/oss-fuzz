@@ -448,7 +448,6 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
     env += env_to_add
 
   project_work_dir = _get_work_dir(project_name)
-  print('Project work dir: ', project_work_dir)
 
   # Copy instrumented libraries.
   if sanitizer == 'memory':
@@ -471,8 +470,6 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
           '%s:%s' % (_get_absolute_path(source_path), workdir),
       ]
     else:
-      print('Source path: ', _get_absolute_path(source_path))
-      print('Mount location: ', _get_absolute_path(mount_location))
       command += [
           '-v',
           '%s:%s' % (_get_absolute_path(source_path), mount_location),
@@ -483,7 +480,7 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
       '-v', '%s:/work' % project_work_dir,
       '-t', 'gcr.io/oss-fuzz/%s' % project_name
   ]
-  commandpwd = [  '-t', 'gcr.io/oss-fuzz/%s' % project_name, 'pwd' ]
+  commandpwd = [  '-t', 'gcr.io/oss-fuzz/%s' % project_name, 'ls' ]
   docker_run(commandpwd)
   result_code = docker_run(command)
 
