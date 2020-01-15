@@ -94,6 +94,7 @@ def run_fuzzers(args):
   """
   print('Starting to run fuzzers.')
   fuzzer_paths = utils.get_project_fuzz_targets(args.project_name)
+  print('Fuzzer paths', str(fuzzer_paths))
   fuzz_targets = []
   for fuzzer in fuzzer_paths:
     fuzz_targets.append(fuzz_target.FuzzTarget(args.project_name, fuzzer, 40))
