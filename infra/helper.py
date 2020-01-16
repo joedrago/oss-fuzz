@@ -482,17 +482,7 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
   ]
 
 
-  print('Local checked out to be mounted.')
-  print(os.listdir(_get_absolute_path(source_path)))
-
-  print('Listing src on image before mount.')
-  commandpwd = [  '-t', 'gcr.io/oss-fuzz/%s' % project_name, 'ls', '/src/yara' ]
-  docker_run(commandpwd)
-
   result_code = docker_run(command)
-  print('Listing src On image after mount.')
-  commandpwd = [  '-t', 'gcr.io/oss-fuzz/%s' % project_name, 'ls', '/src/yara' ]
-  docker_run(commandpwd)
 
   if result_code:
     print('Building fuzzers failed.')
