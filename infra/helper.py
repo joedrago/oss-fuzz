@@ -310,7 +310,6 @@ def build_image_impl(image_name, no_cache=False, pull=False):
 
   build_args += ['-t', 'gcr.io/%s/%s' % (image_project, image_name), dockerfile_dir]
 
-
   return docker_build(build_args, pull=pull)
 
 
@@ -427,7 +426,6 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
   """Build fuzzers."""
   if not build_image_impl(project_name, no_cache=no_cache):
     return 1
-
   project_out_dir = _get_output_dir(project_name)
   if clean:
     print('Cleaning existing build artifacts.')
@@ -483,17 +481,10 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
       '-t', 'gcr.io/oss-fuzz/%s' % project_name
   ]
 
-  print('Local checked out to be mounted.')
-  print(os.listdir(_get_absolute_path(source_path)))
-
-  print('Listing src on image before mount.')
-  commandpwd = [  '-t', 'gcr.io/oss-fuzz/%s' % project_name, 'ls', '/src/yara' ]
-  docker_run(commandpwd)
 
   result_code = docker_run(command)
-  print('Listing src On image after mount.')
-  commandpwd = [  '-t', 'gcr.io/oss-fuzz/%s' % project_name, 'ls', '/src/yara' ]
-  docker_run(commandpwd)
+
+  docker_run(['ls', os.environ["GITHUB_WORKSPACE"]])
 
   if result_code:
     print('Building fuzzers failed.')
