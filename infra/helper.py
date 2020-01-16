@@ -480,7 +480,7 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
       '-v', '%s:/work' % project_work_dir,
       '-t', 'gcr.io/oss-fuzz/%s' % project_name
   ]
-  print('SRC: ', os.environ['SRC'])
+  print(os.environ)
   commandpwd = [  '-t', 'gcr.io/oss-fuzz/%s' % project_name, 'more /src/build.sh' ]
   docker_run(commandpwd)
   result_code = docker_run(command)
