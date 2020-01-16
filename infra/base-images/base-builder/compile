@@ -15,8 +15,10 @@
 #
 ################################################################################
 
-ls /src/yara
+
 echo "---------------------------------------------------------------"
+echo  "pt1."
+ls /src/yara
 
 if [ "$SANITIZER" = "dataflow" ] && [ "$FUZZING_ENGINE" != "dataflow" ]; then
   echo "ERROR: 'dataflow' sanitizer can be used with 'dataflow' engine only."
@@ -27,6 +29,8 @@ if [ -z "${SANITIZER_FLAGS-}" ]; then
   FLAGS_VAR="SANITIZER_FLAGS_${SANITIZER}"
   export SANITIZER_FLAGS=${!FLAGS_VAR-}
 fi
+echo "pt2."
+ls /src/yara
 
 if [[ $ARCHITECTURE == "i386" ]]; then
     export CFLAGS="-m32 $CFLAGS"
@@ -36,6 +40,9 @@ if [[ $FUZZING_ENGINE != "none" ]]; then
   # compile script might override environment, use . to call it.
   . compile_${FUZZING_ENGINE}
 fi
+
+echo "pt3."
+ls /src/yara
 
 if [[ $SANITIZER_FLAGS = *sanitize=memory* ]]
 then
@@ -52,6 +59,9 @@ then
   fi
 fi
 
+echo "pt4."
+ls /src/yara
+
 # Coverage flag overrides.
 COVERAGE_FLAGS_VAR="COVERAGE_FLAGS_${SANITIZER}"
 if [[ -n ${!COVERAGE_FLAGS_VAR+x} ]]
@@ -59,13 +69,22 @@ then
   export COVERAGE_FLAGS="${!COVERAGE_FLAGS_VAR}"
 fi
 
+echo "pt5."
+ls /src/yara
+
  # Don't need coverage instrumentation for engine-less builds.
 if [ $FUZZING_ENGINE = "none" ]; then
   export COVERAGE_FLAGS=
 fi
 
+echo "pt6."
+ls /src/yara
+
 export CFLAGS="$CFLAGS $SANITIZER_FLAGS $COVERAGE_FLAGS"
 export CXXFLAGS="$CFLAGS $CXXFLAGS_EXTRA"
+
+echo "pt7."
+ls /src/yara
 
 echo "CC=$CC"
 echo "CXX=$CXX"
