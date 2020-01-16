@@ -15,6 +15,7 @@
 #
 ################################################################################
 
+ls /src/yara
 echo "---------------------------------------------------------------"
 
 if [ "$SANITIZER" = "dataflow" ] && [ "$FUZZING_ENGINE" != "dataflow" ]; then
@@ -70,9 +71,7 @@ echo "CC=$CC"
 echo "CXX=$CXX"
 echo "CFLAGS=$CFLAGS"
 echo "CXXFLAGS=$CXXFLAGS"
-echo $PWD
 echo "---------------------------------------------------------------"
-ls /src/yara
 BUILD_CMD="bash -eux $SRC/build.sh"
 ls /src/yara
 # We need to preserve source code files for generating a code coverage report.
