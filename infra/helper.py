@@ -483,7 +483,8 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
 
 
 
-  print(os.listdir(_get_absolute_path(source_path)))
+  commandpwd = [  '-t', 'gcr.io/oss-fuzz/%s' % project_name, 'ls', '/src/yara' ]
+  docker_run(commandpwd)
 
   result_code = docker_run(command)
 
