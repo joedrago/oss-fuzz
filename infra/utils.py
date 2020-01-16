@@ -70,12 +70,12 @@ def get_project_fuzz_targets(project_name):
     return []
   fuzz_target_paths = []
   path = os.path.join(helper.BUILD_DIR, 'out', project_name)
-  print('Path', path)
-  for filename in os.listdir(path):
-    print('Possable fuzzer:', filename)
-    file_path = os.path.join(root, filename)
-    print(file_path)
-    if is_fuzz_target_local(file_path):
-      fuzz_target_paths.append(file_path)
+  for root, _, files in os.walk(path):
+    for filename in os.listdir(path):
+      print('Possable fuzzer:', filename)
+      file_path = os.path.join(root, filename)
+      print(file_path)
+      if is_fuzz_target_local(file_path):
+        fuzz_target_paths.append(file_path)
 
   return fuzz_target_paths
