@@ -482,12 +482,12 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
   ]
 
 
-
+  print('Before.')
   commandpwd = [  '-t', 'gcr.io/oss-fuzz/%s' % project_name, 'ls', '/src/yara' ]
   docker_run(commandpwd)
 
   result_code = docker_run(command)
-
+  print('After')
   commandpwd = [  '-t', 'gcr.io/oss-fuzz/%s' % project_name, 'ls', '/src/yara' ]
   docker_run(commandpwd)
 
