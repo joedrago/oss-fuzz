@@ -26,4 +26,5 @@ RUN \
 
 RUN git clone --depth 1 https://github.com/Leo-Neat/yara.git
 COPY build.sh $SRC/
+VOLUME /tmp/src /usr/local/google/home/lneat/Documents
 WORKDIR yara

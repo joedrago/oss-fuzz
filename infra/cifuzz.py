@@ -75,15 +75,17 @@ def build_fuzzers(args):
   """
 
   # TODO: Fix return value bubble to actually handle errors.
-  inferred_url, repo_name = build_specified_commit.detect_main_repo(
-      args.project_name, repo_name=args.repo_name)
-  print(repo_name)
-  logging.debug('Building fuzzers for project: {}.'.format(args.project_name))
-  build_repo_manager = repo_manager.RepoManager(inferred_url,
-                                                '/src/yara',
-                                                repo_name=repo_name)
-  return build_specified_commit.build_fuzzers_from_commit(
-      args.project_name, args.commit_sha, build_repo_manager) == 0
+  with tempfile.TemporaryDirectory() as tmp_dir:
+
+    inferred_url, repo_name = build_specified_commit.detect_main_repo(
+        args.project_name, repo_name=args.repo_name)
+    print(repo_name)
+    logging.debug('Building fuzzers for project: {}.'.format(args.project_name))
+    build_repo_manager = repo_manager.RepoManager(inferred_url,
+                                                  os.envron['GITHUB_WORKSPACE'],
+                                                  repo_name=repo_name)
+    return build_specified_commit.build_fuzzers_from_commit(
+        args.project_name, args.commit_sha, build_repo_manager) == 0
 
 
 def run_fuzzers(args):
@@ -97,7 +99,7 @@ def run_fuzzers(args):
   print('Fuzzer paths', str(fuzzer_paths))
   fuzz_targets = []
   for fuzzer in fuzzer_paths:
-    fuzz_targets.append(fuzz_target.FuzzTarget(args.project_name, fuzzer, 40))
+    fuzz_targets.append(fuzz_target.FuzzTarget(args.project_name, fuzzer, 20))
   print(fuzzer_paths)
   error_detected = False
 

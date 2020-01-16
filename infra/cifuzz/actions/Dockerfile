@@ -39,5 +39,7 @@ RUN git clone -b detect-fuzzers https://github.com/google/oss-fuzz.git /src/oss-
 # Copies your code file from  action repository to the container
 COPY entrypoint.py /opt/entrypoint.py
 
+VOLUME /data/projsrc:/src/
+
 # Python file to execute when the docker container starts up
 ENTRYPOINT ["python3", "/opt/entrypoint.py"]
