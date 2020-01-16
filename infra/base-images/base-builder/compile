@@ -72,9 +72,9 @@ echo "CFLAGS=$CFLAGS"
 echo "CXXFLAGS=$CXXFLAGS"
 echo $PWD
 echo "---------------------------------------------------------------"
-
+ls /src/yara
 BUILD_CMD="bash -eux $SRC/build.sh"
-
+ls /src/yara
 # We need to preserve source code files for generating a code coverage report.
 # We need exact files that were compiled, so copy both $SRC and $WORK dirs.
 COPY_SOURCES_CMD="cp -rL --parents $SRC $WORK /usr/include $OUT"
