@@ -75,16 +75,15 @@ def build_fuzzers(args):
   """
 
   # TODO: Fix return value bubble to actually handle errors.
-  with tempfile.TemporaryDirectory() as tmp_dir:
-    inferred_url, repo_name = build_specified_commit.detect_main_repo(
-        args.project_name, repo_name=args.repo_name)
-    print(repo_name)
-    logging.debug('Building fuzzers for project: {}.'.format(args.project_name))
-    build_repo_manager = repo_manager.RepoManager(inferred_url,
-                                                  tmp_dir,
-                                                  repo_name=repo_name)
-    return build_specified_commit.build_fuzzers_from_commit(
-        args.project_name, args.commit_sha, build_repo_manager) == 0
+  inferred_url, repo_name = build_specified_commit.detect_main_repo(
+      args.project_name, repo_name=args.repo_name)
+  print(repo_name)
+  logging.debug('Building fuzzers for project: {}.'.format(args.project_name))
+  build_repo_manager = repo_manager.RepoManager(inferred_url,
+                                                '/src/yara',
+                                                repo_name=repo_name)
+  return build_specified_commit.build_fuzzers_from_commit(
+      args.project_name, args.commit_sha, build_repo_manager) == 0
 
 
 def run_fuzzers(args):
