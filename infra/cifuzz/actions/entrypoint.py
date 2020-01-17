@@ -32,7 +32,7 @@ def main():
       primary_container = None
   print(subprocess.check_output (['docker','inspect', primary_container]))
 
-  """
+
   # Build the specified project's fuzzers from the current repo state.
   print('Building fuzzers\nproject: {0}\nrepo name: {1}\ncommit: {2}'.format(
       project_name, repo_name, commit_sha))
@@ -61,7 +61,6 @@ def main():
   print(out)
   print(err)
   print('Fuzzers ran successfully.')
-  """
   return 0
 
 

@@ -483,6 +483,8 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
       'gcr.io/oss-fuzz/%s' % project_name
   ]
 
+  print(subprocess.check_output (['docker','inspect', 'gcr.io/oss-fuzz/%s' % project_name]))
+
 
   result_code = docker_run(command)
 
