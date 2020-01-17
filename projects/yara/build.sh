@@ -14,8 +14,9 @@
 # limitations under the License.
 #
 ################################################################################
-su pwd
-su ls
+
+echo '/src/yara before build'
+ls
 
 ./bootstrap.sh
 ./configure --enable-debug --enable-dex --enable-dotnet --without-crypto

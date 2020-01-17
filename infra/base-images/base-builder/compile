@@ -18,7 +18,6 @@
 
 echo "---------------------------------------------------------------"
 echo "in mount image before build.sh run"
-ls /src/yara
 
 if [ "$SANITIZER" = "dataflow" ] && [ "$FUZZING_ENGINE" != "dataflow" ]; then
   echo "ERROR: 'dataflow' sanitizer can be used with 'dataflow' engine only."
@@ -105,6 +104,3 @@ if [[ "$FUZZING_ENGINE" = "dataflow" ]]; then
   # Remove seed corpus as it can be huge but is not needed for a dataflow build.
   rm -f $OUT/*.zip
 fi
-
-echo "in mount image after build.sh"
-ls /src/yara
