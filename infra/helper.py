@@ -469,19 +469,27 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
           '-v',
           '%s:%s' % (_get_absolute_path(source_path), workdir),
       ]
+    else:
+      with open('/proc/self/cgroup') as file_handle:
+        if 'docker' in file_handle.read():
+          with open('/etc/hostname') as file_handle:
+            primary_container = file_handle.read().strip()
+        else:
+          primary_container = None
+      command += ['--volumes-from', primary_container]
+      command += [
+          '-v',
+          '%s:%s' % (_get_absolute_path(source_path), mount_location),
+      ]
 
   command += [
-      '-v',os.path.join(os.environ["GITHUB_WORKSPACE"], 'yara') + ':/src/yara',
       '-v', '%s:/out' % project_out_dir,
       '-v', '%s:/work' % project_work_dir,
       '-t', 'gcr.io/oss-fuzz/%s' % project_name
   ]
 
-  subprocess.check_call(['touch', os.path.join(os.environ["GITHUB_WORKSPACE"], 'yara', 'does-this-work')])
-
 
   result_code = docker_run(command)
-  docker_run([  '-t', 'gcr.io/oss-fuzz/%s' % project_name, 'ls', '/src/yara'])
 
   if result_code:
     print('Building fuzzers failed.')
