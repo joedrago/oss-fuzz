@@ -478,9 +478,7 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
           primary_container = None
       command += ['--volumes-from', primary_container]
 
-  command += [
-      '-t', 'gcr.io/oss-fuzz/%s' % project_name
-  ]
+  command += [ 'gcr.io/oss-fuzz/%s' % project_name ]
 
   command += ['ls', os.environ['GITHUB_WORKSPACE']]
 
