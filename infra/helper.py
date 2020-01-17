@@ -472,14 +472,15 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
       print('Cannot use local checkout with "WORKDIR: /src".', file=sys.stderr)
       return 1
 
+  with open('/proc/self/cgroup') as file_handle:
+    if 'docker' in file_handle.read():
+      with open('/etc/hostname') as file_handle:
+        primary_container = file_handle.read().strip()
+    else:
+      primary_container = None
 
-  command += [
-      'gcr.io/oss-fuzz/%s' % project_name
-  ]
-
-
-  result_code = docker_run(command)
-  print(subprocess.check_output (['docker','inspect', 'gcr.io/oss-fuzz/%s' % project_name]))
+  print(subprocess.check_output (['docker', 'run', '--rm', '--cap-add', 'SYS_PTRACE'] +
+      _env_to_docker_args(env)) + ['--volumes-from', primary_container, 'gcr.io/oss-fuzz/%s' % project_name, '/bin/bash', '-c', 'ls ' + os.environ['GITHUB_WORKSPACE'] ] )
   if result_code:
     print('Building fuzzers failed.')
     return result_code
