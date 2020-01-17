@@ -24,9 +24,15 @@ def main():
   repo_name = os.environ['GITHUB_REPOSITORY'].rsplit('/', 1)[-1]
   commit_sha = os.environ['GITHUB_SHA']
 
-  subprocess.check_call(['docker','volume','ls', '--format', '"{{.Name}}: {{.Mountpoint}}"'])
-  subprocess.check_call(['ls', os.environ['GITHUB_WORKSPACE']])
+  with open('/proc/self/cgroup') as file_handle:
+    if 'docker' in file_handle.read():
+      with open('/etc/hostname') as file_handle:
+        primary_container = file_handle.read().strip()
+    else:
+      primary_container = None
+  print(subprocess.check_output (['docker','inspect', primary_container]))
 
+  """
   # Build the specified project's fuzzers from the current repo state.
   print('Building fuzzers\nproject: {0}\nrepo name: {1}\ncommit: {2}'.format(
       project_name, repo_name, commit_sha))
@@ -55,6 +61,7 @@ def main():
   print(out)
   print(err)
   print('Fuzzers ran successfully.')
+  """
   return 0
 
 

@@ -469,9 +469,14 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
           '%s:%s' % (_get_absolute_path(source_path), workdir),
       ]
     else:
+      with open('/proc/self/cgroup') as file_handle:
+        if 'docker' in file_handle.read():
+          with open('/etc/hostname') as file_handle:
+            primary_container = file_handle.read().strip()
+        else:
+          primary_container = None
       command += [
-          '-mount',
-          'type=bind,source=%s,target=%s' % (_get_absolute_path(source_path), mount_location),
+          '--volumes-from', primary_container
       ]
 
   command += [
