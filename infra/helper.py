@@ -483,8 +483,7 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
 
 
   result_code = docker_run(['gcr.io/oss-fuzz/%s' % project_name])
-  print(subprocess.check_output(['docker', 'inspect', '-f', '"{{json.Mounts}}"', 'gcr.io/oss-fuzz/%s' % project_name]))
-  print(subprocess.check_output(['docker', 'inspect', '-f', '"{{json.Mounts}}"', primary_container]))
+  print(subprocess.check_output(['docker', 'run', 'gcr.io/oss-fuzz/%s' % project_name, 'bash', '-c', '"git rev-parse HEAD"']))
 
 
   if result_code:
