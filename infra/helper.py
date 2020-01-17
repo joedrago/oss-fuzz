@@ -475,7 +475,7 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
           '%s:%s' % (_get_absolute_path(source_path), mount_location),
       ]
   print('Listing github workspace dir.')
-  subprocess.check_call(['ls', os.environ['GITHUB_WORKSPACE']])
+  print(subprocess.check_output(['ls', os.environ['GITHUB_WORKSPACE']]))
   command += [
       '-v',os.environ["GITHUB_WORKSPACE"] + ':' + os.environ["GITHUB_WORKSPACE"],
       '-v', '%s:/out' % project_out_dir,
