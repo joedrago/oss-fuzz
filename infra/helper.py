@@ -474,7 +474,8 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
           '-v',
           '%s:%s' % (_get_absolute_path(source_path), mount_location),
       ]
-
+  print('Listing github workspace dir.')
+  subprocess.check_call(['ls', os.environ['GITHUB_WORKSPACE']])
   command += [
       '-v',os.environ["GITHUB_WORKSPACE"] + ':' + os.environ["GITHUB_WORKSPACE"],
       '-v', '%s:/out' % project_out_dir,
@@ -483,9 +484,9 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
   ]
 
 
+
   result_code = docker_run(command)
 
-  docker_run([ '-t', 'gcr.io/oss-fuzz/%s' % project_name, 'ls', os.environ["GITHUB_WORKSPACE"]])
 
   if result_code:
     print('Building fuzzers failed.')
