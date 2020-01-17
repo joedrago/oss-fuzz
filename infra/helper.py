@@ -316,7 +316,7 @@ def build_image_impl(image_name, no_cache=False, pull=False):
     else:
       primary_container = None
   build_args += [
-      '-volumes-from', primary_container)
+      '--volumes-from', primary_container)
   ]
 
   return docker_build(build_args, pull=pull)
