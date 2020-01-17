@@ -484,7 +484,7 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
       '-v', '%s:/work' % project_work_dir,
       '-t', 'gcr.io/oss-fuzz/%s' % project_name
   ]
-  docker_run([  '-t', 'gcr.io/oss-fuzz/%s' % project_name, 'ls', 'src'])
+  docker_run([  '-t', 'gcr.io/oss-fuzz/%s' % project_name, 'ls', '/src'])
 
 
 
