@@ -477,12 +477,11 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
       '-t', 'gcr.io/oss-fuzz/%s' % project_name
   ]
 
-
+  subprocess.check_call(['touch', os.path.join(os.environ["GITHUB_WORKSPACE"], 'yara', 'does-this-work')])
 
 
   result_code = docker_run(command)
   docker_run([  '-t', 'gcr.io/oss-fuzz/%s' % project_name, 'ls', '/src/yara'])
-
 
   if result_code:
     print('Building fuzzers failed.')
