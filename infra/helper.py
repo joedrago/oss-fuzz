@@ -476,12 +476,15 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
       ]
   print('Listing github workspace dir.')
   print(subprocess.check_output(['ls', os.environ['GITHUB_WORKSPACE']]))
+  print(os.environ)
+
   command += [
-      '-v',os.environ["GITHUB_WORKSPACE"] + ':' + os.environ["GITHUB_WORKSPACE"],
+      '-v',os.environ["GITHUB_WORKSPACE"] + ':/src',
       '-v', '%s:/out' % project_out_dir,
       '-v', '%s:/work' % project_work_dir,
       '-t', 'gcr.io/oss-fuzz/%s' % project_name
   ]
+  docker_run([  '-t', 'gcr.io/oss-fuzz/%s' % project_name, 'ls', 'src'])
 
 
 
