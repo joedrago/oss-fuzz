@@ -433,7 +433,7 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
     # Clean old and possibly conflicting artifacts in project's out directory.
     docker_run([
         '-v', '%s:/out' % project_out_dir,
-        '-t', 'gcr.io/oss-fuzz/%s' % project_name,
+        'gcr.io/oss-fuzz/%s' % project_name,
         '/bin/bash', '-c', 'rm -rf /out/*'
     ])
 
@@ -476,7 +476,7 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
             primary_container = file_handle.read().strip()
         else:
           primary_container = None
-      command += ['--volumes-from', primary_container]
+      command += ['-v', source_path + ':' + mount_location]
 
   command += [ 'gcr.io/oss-fuzz/%s' % project_name ]
 
