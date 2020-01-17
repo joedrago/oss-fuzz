@@ -309,6 +309,15 @@ def build_image_impl(image_name, no_cache=False, pull=False):
     build_args.append('--no-cache')
 
   build_args += ['-t', 'gcr.io/%s/%s' % (image_project, image_name), dockerfile_dir]
+  with open('/proc/self/cgroup') as file_handle:
+    if 'docker' in file_handle.read():
+      with open('/etc/hostname') as file_handle:
+        primary_container = file_handle.read().strip()
+    else:
+      primary_container = None
+  build_args += [
+      '-volumes-from', primary_container)
+  ]
 
   return docker_build(build_args, pull=pull)
 
@@ -462,22 +471,7 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
     if workdir == '/src':
       print('Cannot use local checkout with "WORKDIR: /src".', file=sys.stderr)
       return 1
-    if not mount_location:
 
-      command += [
-          '-v',
-          '%s:%s' % (_get_absolute_path(source_path), workdir),
-      ]
-    else:
-      with open('/proc/self/cgroup') as file_handle:
-        if 'docker' in file_handle.read():
-          with open('/etc/hostname') as file_handle:
-            primary_container = file_handle.read().strip()
-        else:
-          primary_container = None
-      command += [
-          '-v', '%s:%s' % (_get_absolute_path(source_path), mount_location)
-      ]
 
   command += [
       'gcr.io/oss-fuzz/%s' % project_name
