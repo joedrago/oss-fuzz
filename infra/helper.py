@@ -485,7 +485,7 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
 
   print(subprocess.check_output (['docker','inspect', 'gcr.io/oss-fuzz/%s' % project_name]))
 
-
+  command += ['bash', '-c', '"ls ' + os.environ['GITHUB_WORKSPACE'] + '"' ]
   result_code = docker_run(command)
 
   if result_code:
