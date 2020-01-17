@@ -475,8 +475,6 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
       ]
 
   command += [
-      '-v', '%s:/out' % project_out_dir,
-      '-v', '%s:/work' % project_work_dir,
       'gcr.io/oss-fuzz/%s' % project_name
   ]
 

@@ -79,10 +79,9 @@ def build_fuzzers(args):
 
     inferred_url, repo_name = build_specified_commit.detect_main_repo(
         args.project_name, repo_name=args.repo_name)
-    print(repo_name)
     logging.debug('Building fuzzers for project: {}.'.format(args.project_name))
     build_repo_manager = repo_manager.RepoManager(inferred_url,
-                                                  os.environ['GITHUB_WORKSPACE'],
+                                                  tmp_dir,
                                                   repo_name=repo_name)
     return build_specified_commit.build_fuzzers_from_commit(
         args.project_name, args.commit_sha, build_repo_manager) == 0

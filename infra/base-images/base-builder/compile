@@ -17,7 +17,6 @@
 
 
 echo "---------------------------------------------------------------"
-echo "in mount image before build.sh run"
 
 if [ "$SANITIZER" = "dataflow" ] && [ "$FUZZING_ENGINE" != "dataflow" ]; then
   echo "ERROR: 'dataflow' sanitizer can be used with 'dataflow' engine only."
