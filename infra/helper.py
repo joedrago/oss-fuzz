@@ -469,26 +469,23 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
           '-v',
           '%s:%s' % (_get_absolute_path(source_path), workdir),
       ]
-    else:
-      command += [
-          '-v',
-          '%s:%s' % (_get_absolute_path(source_path), mount_location),
-      ]
+
   print('Listing github workspace dir.')
   print(subprocess.check_output(['ls', os.environ['GITHUB_WORKSPACE']]))
   print(os.environ)
 
   command += [
-      '-v',os.environ["GITHUB_WORKSPACE"] + ':/src',
+      '-v',os.environ["GITHUB_WORKSPACE"] + ':/src/yara',
       '-v', '%s:/out' % project_out_dir,
       '-v', '%s:/work' % project_work_dir,
       '-t', 'gcr.io/oss-fuzz/%s' % project_name
   ]
-  docker_run([  '-t', 'gcr.io/oss-fuzz/%s' % project_name, 'ls', '/src'])
+
 
 
 
   result_code = docker_run(command)
+  docker_run([  '-t', 'gcr.io/oss-fuzz/%s' % project_name, 'ls', '/src/yara'])
 
 
   if result_code:
