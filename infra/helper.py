@@ -432,8 +432,7 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
 
     # Clean old and possibly conflicting artifacts in project's out directory.
     docker_run([
-        '-v', '%s:/out' % project_out_dir,
-        '-t', 'gcr.io/oss-fuzz/%s' % project_name,
+        '-v', '%s:/out' % project_out_dir, 'gcr.io/oss-fuzz/%s' % project_name,
         '/bin/bash', '-c', 'rm -rf /out/*'
     ])
 
