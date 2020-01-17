@@ -24,7 +24,7 @@ def main():
   repo_name = os.environ['GITHUB_REPOSITORY'].rsplit('/', 1)[-1]
   commit_sha = os.environ['GITHUB_SHA']
 
-  subprocess.check_call(['docker','volume','ls', '--format', '"{{.NAME}}: {{.Mountpoint}}"'])
+  subprocess.check_call(['docker','volume','ls', '--format', '"{{.Name}}: {{.Mountpoint}}"'])
   subprocess.check_call(['ls', os.environ['GITHUB_WORKSPACE']])
 
   # Build the specified project's fuzzers from the current repo state.
