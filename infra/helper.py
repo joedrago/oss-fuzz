@@ -309,15 +309,6 @@ def build_image_impl(image_name, no_cache=False, pull=False):
     build_args.append('--no-cache')
 
   build_args += ['-t', 'gcr.io/%s/%s' % (image_project, image_name), dockerfile_dir]
-  with open('/proc/self/cgroup') as file_handle:
-    if 'docker' in file_handle.read():
-      with open('/etc/hostname') as file_handle:
-        primary_container = file_handle.read().strip()
-    else:
-      primary_container = None
-  build_args += [
-      '--volumes-from', primary_container
-  ]
 
   return docker_build(build_args, pull=pull)
 
