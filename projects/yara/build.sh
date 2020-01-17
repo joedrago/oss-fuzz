@@ -15,9 +15,6 @@
 #
 ################################################################################
 
-echo '/src/yara before build'
-ls
-
 ./bootstrap.sh
 ./configure --enable-debug --enable-dex --enable-dotnet --without-crypto
 

@@ -433,7 +433,7 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
     # Clean old and possibly conflicting artifacts in project's out directory.
     docker_run([
         '-v', '%s:/out' % project_out_dir,
-        'gcr.io/oss-fuzz/%s' % project_name,
+        '-t', 'gcr.io/oss-fuzz/%s' % project_name,
         '/bin/bash', '-c', 'rm -rf /out/*'
     ])
 
@@ -470,21 +470,19 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
           '%s:%s' % (_get_absolute_path(source_path), workdir),
       ]
     else:
-      with open('/proc/self/cgroup') as file_handle:
-        if 'docker' in file_handle.read():
-          with open('/etc/hostname') as file_handle:
-            primary_container = file_handle.read().strip()
-        else:
-          primary_container = None
-      command += ['-v', source_path + ':' + mount_location]
+      command += [
+          '-v',
+          '%s:%s' % (_get_absolute_path(source_path), mount_location),
+      ]
 
-  command += [ 'gcr.io/oss-fuzz/%s' % project_name ]
+  command += [
+      '-v', '%s:/out' % project_out_dir,
+      '-v', '%s:/work' % project_work_dir,
+      'gcr.io/oss-fuzz/%s' % project_name
+  ]
 
 
-
-  result_code = docker_run(['gcr.io/oss-fuzz/%s' % project_name])
-  print(subprocess.check_output(['docker', 'run', 'gcr.io/oss-fuzz/%s' % project_name, 'bash', '-c', '"git rev-parse HEAD"']))
-
+  result_code = docker_run(command)
 
   if result_code:
     print('Building fuzzers failed.')
