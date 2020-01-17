@@ -470,8 +470,8 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
       ]
     else:
       command += [
-          '-v',
-          '%s:%s' % (_get_absolute_path(source_path), mount_location),
+          '-mount',
+          'type=bind,source=%s,target=%s' % (_get_absolute_path(source_path), mount_location),
       ]
 
   command += [
