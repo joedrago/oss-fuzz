@@ -470,7 +470,7 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
     else:
       primary_container = None
   command = ['docker', 'run', '--rm', '--cap-add', 'SYS_PTRACE'] + _env_to_docker_args(env)
-  command += ['--volumes-from', primary_container, 'gcr.io/oss-fuzz/%s' % project_name, '/bin/bash', '-c', 'mv ' + os.environ['GITHUB_WORKSPACE'] + ' ' + mount_location + '&& compile']
+  command += ['--volumes-from', primary_container, 'gcr.io/oss-fuzz/%s' % project_name, '/bin/bash', '-c', 'mv ' + os.path.join(os.environ['GITHUB_WORKSPACE'], project_name) + ' ' + mount_location + '&& compile']
   print(subprocess.check_output (command))
   print('Building fuzzers failed.')
   return 1
