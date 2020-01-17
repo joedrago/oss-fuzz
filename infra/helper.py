@@ -477,17 +477,12 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
         else:
           primary_container = None
       command += ['--volumes-from', primary_container]
-      command += [
-          '-v',
-          '%s:%s' % (_get_absolute_path(source_path), mount_location),
-      ]
 
   command += [
-      '-v', '%s:/out' % project_out_dir,
-      '-v', '%s:/work' % project_work_dir,
       '-t', 'gcr.io/oss-fuzz/%s' % project_name
   ]
 
+  command += ['ls', os.environ['GITHUB_WORKSPACE']]
 
   result_code = docker_run(command)
 
