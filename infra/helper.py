@@ -470,10 +470,6 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
           '%s:%s' % (_get_absolute_path(source_path), workdir),
       ]
 
-  print('Listing github workspace dir.')
-  print(subprocess.check_output(['ls', os.environ['GITHUB_WORKSPACE']]))
-  print(os.environ)
-
   command += [
       '-v',os.path.join(os.environ["GITHUB_WORKSPACE"], 'yara') + ':/src/yara',
       '-v', '%s:/out' % project_out_dir,

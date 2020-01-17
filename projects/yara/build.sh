@@ -14,8 +14,8 @@
 # limitations under the License.
 #
 ################################################################################
-echo $PWD
-ls
+su pwd
+su ls
 
 ./bootstrap.sh
 ./configure --enable-debug --enable-dex --enable-dotnet --without-crypto
