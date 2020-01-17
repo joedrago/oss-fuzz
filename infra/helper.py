@@ -475,7 +475,7 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
   print(os.environ)
 
   command += [
-      '-v',os.environ["GITHUB_WORKSPACE"] + ':/src/yara',
+      '-v',os.path.join(os.environ["GITHUB_WORKSPACE"], 'yara') + ':/src/yara',
       '-v', '%s:/out' % project_out_dir,
       '-v', '%s:/work' % project_work_dir,
       '-t', 'gcr.io/oss-fuzz/%s' % project_name
