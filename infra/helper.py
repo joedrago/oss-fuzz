@@ -470,11 +470,10 @@ def build_fuzzers_impl(project_name, clean, engine, sanitizer, architecture,
     else:
       primary_container = None
   command = ['docker', 'run', '--rm', '--cap-add', 'SYS_PTRACE'] + _env_to_docker_args(env)
-  command += ['--volumes-from', primary_container, 'gcr.io/oss-fuzz/%s' % project_name, '/bin/bash', '-c', 'ls /']
+  command += ['--volumes-from', primary_container, 'gcr.io/oss-fuzz/%s' % project_name, '/bin/bash', '-c', 'ls /github']
   print(subprocess.check_output (command))
-  if result_code:
-    print('Building fuzzers failed.')
-    return 1
+  print('Building fuzzers failed.')
+  return 1
 
   # Patch MSan builds to use instrumented shared libraries.
   if sanitizer == 'memory':
