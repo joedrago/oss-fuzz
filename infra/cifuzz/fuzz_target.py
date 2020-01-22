@@ -68,12 +68,11 @@ class FuzzTarget():
         'SANITIZER=address',
         '-e',
         'RUN_FUZZER_MODE=interactive',
+        'OUT=' + os.path.dirname(self.target_path)
     ]
     command += [
         'gcr.io/oss-fuzz-base/base-runner', 'bash', '-c',
-        'cp -rf {0} {1} && run_fuzzer {2} && cp {1} {3}'.format(
-            self.target_path, '/out', self.target_name,
-            os.path.dirname(self.target_path))
+        'run_fuzzer {2}'.format(self.target_name)
     ]
 
     logging.debug('Running command: %s', ' '.join(command))
