@@ -68,13 +68,13 @@ class FuzzTarget():
         'SANITIZER=address',
         '-e',
         'RUN_FUZZER_MODE=interactive',
+        '-e'
         'OUT=' + os.path.dirname(self.target_path)
     ]
     command += [
         'gcr.io/oss-fuzz-base/base-runner', 'bash', '-c',
-        'ls $OUT && run_fuzzer {0}'.format(self.target_name)
+        'run_fuzzer {0}'.format(self.target_name)
     ]
-    print('DIRNAME: ', os.path.dirname(self.target_path))
     logging.debug('Running command: %s', ' '.join(command))
     process = subprocess.Popen(command,
                                stdout=subprocess.PIPE,
@@ -105,5 +105,5 @@ class FuzzTarget():
     match = re.search(r'\bTest unit written to \.([^ ]+)',
                       error_string.rstrip())
     if match:
-      return match.group(0).split('/')[-1]
+      return match.group(0)
     return None
