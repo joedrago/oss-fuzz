@@ -48,6 +48,7 @@ def is_fuzz_target_local(file_path):
   with open(file_path, 'rb') as file_handle:
     return file_handle.read().find(FUZZ_TARGET_SEARCH_STRING.encode())
 
+
 def get_fuzz_targets(path):
   """Get list of fuzz targets in a directory.
 
@@ -79,7 +80,7 @@ def get_env_var(project_name, env_var_name):
   Returns:
     None on error or the enviroment variable value.
   """
-  helper.build_image_impl(project_name) 
+  helper.build_image_impl(project_name)
   command = ['docker', 'run', '--rm', '--privileged']
   command += ['bash', '-c', 'echo "${0}"'.format(env_var_name)]
   out, err_code = build_specified_commit.execute(command)
