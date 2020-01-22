@@ -13,9 +13,9 @@
 # limitations under the License.
 """A module to handle running a fuzz target for a specified amount of time."""
 import logging
-import subprocess
 import os
 import re
+import subprocess
 import sys
 
 # pylint: disable=wrong-import-position
@@ -28,7 +28,7 @@ logging.basicConfig(
     level=logging.DEBUG)
 
 
-class FuzzTarget():
+class FuzzTarget:
   """A class to manage a single fuzz target.
 
   Attributes:
@@ -46,7 +46,7 @@ class FuzzTarget():
       target_path: The location of the fuzz target binary.
       duration: The length of time  in seconds the target should run.
     """
-    self.target_name = target_path.split('/')[-1]
+    self.target_name = os.path.basename(target_path)
     self.duration = duration
     self.project_name = project_name
     self.target_path = target_path
