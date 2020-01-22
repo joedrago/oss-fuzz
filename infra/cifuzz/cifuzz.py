@@ -109,7 +109,7 @@ def build_fuzzers(args, git_workspace, out_dir):
   if not src:
     print('Could not get $SRC from project docker image. ', file=sys.stderr)
     return False
-  out = '/out'
+
   if not inferred_url or not oss_fuzz_repo_name:
     print('Error: Repo URL or name could not be determined.', file=sys.stderr)
 
