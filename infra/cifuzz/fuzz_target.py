@@ -27,6 +27,7 @@ logging.basicConfig(
     stream=sys.stdout,
     level=logging.DEBUG)
 
+
 class FuzzTarget():
   """A class to manage a single fuzz target.
 
@@ -64,8 +65,7 @@ class FuzzTarget():
     ]
     command += [
         '-e', 'FUZZING_ENGINE=libfuzzer', '-e', 'SANITIZER=address', '-e',
-        'RUN_FUZZER_MODE=interactive', '-e',
-        'OUT=' + self.out_dir
+        'RUN_FUZZER_MODE=interactive', '-e', 'OUT=' + self.out_dir
     ]
     command += [
         'gcr.io/oss-fuzz-base/base-runner', 'bash', '-c',
@@ -97,8 +97,7 @@ class FuzzTarget():
     Returns:
       The error test case or None if not found.
     """
-    match = re.search(r'\bTest unit written to \.([^ ]+)',
-                      error_string)
+    match = re.search(r'\bTest unit written to \.([^ ]+)', error_string)
     print('Out Dir: ', os.path.join(self.out_dir, match.group(1)))
     if match:
       return os.path.join(self.out_dir, match.group(1))

@@ -20,6 +20,7 @@ Eventually it will be used to help CI tools determine which fuzzers to run.
 
 import argparse
 import enum
+import logging
 import os
 import shutil
 import sys
@@ -40,10 +41,12 @@ class Status(enum.Enum):
   ERROR = 1
   BUG_FOUND = 2
 
+
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     stream=sys.stdout,
     level=logging.DEBUG)
+
 
 def main():
   """Connects fuzzers with CI tools.
@@ -173,11 +176,10 @@ def run_fuzzers(args, out_dir):
   for target in fuzz_targets:
     test_case, stack_trace = target.start()
     if not test_case or not stack_trace:
-      logging.debug('Fuzzer {} finished running.'.format(target.target_name))
+      logging.debug('Fuzzer %s, finished running.', target.target_name)
     else:
-      logging.debug("Fuzzer {} Detected Error: {}".format(target.target_name,
-                                                  stack_trace),
-            file=sys.stderr)
+      logging.debug("Fuzzer %s, Detected Error: %s", target.target_name,
+                    stack_trace)
       shutil.move(test_case, '/tmp/testcase')
       return True, True
   return True, False
