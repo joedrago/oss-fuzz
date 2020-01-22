@@ -17,6 +17,9 @@ import os
 import re
 import stat
 
+import build_specified_commit
+import helper
+
 ALLOWED_FUZZ_TARGET_EXTENSIONS = ['', '.exe']
 FUZZ_TARGET_SEARCH_STRING = 'LLVMFuzzerTestOneInput'
 VALID_TARGET_NAME = re.compile(r'^[a-zA-Z0-9_-]+$')
@@ -45,7 +48,6 @@ def is_fuzz_target_local(file_path):
   with open(file_path, 'rb') as file_handle:
     return file_handle.read().find(FUZZ_TARGET_SEARCH_STRING.encode())
 
-
 def get_fuzz_targets(path):
   """Get list of fuzz targets in a directory.
 
@@ -65,6 +67,25 @@ def get_fuzz_targets(path):
         fuzz_target_paths.append(file_path)
 
   return fuzz_target_paths
+
+
+def get_env_var(project_name, env_var_name):
+  """Gets an environment variable from a docker image.
+
+  Args:
+    project_name: The oss-fuzz project to get the var from.
+    env_var_name: The name of the variable to be checked.
+
+  Returns:
+    None on error or the enviroment variable value.
+  """
+  helper.build_image_impl(project_name) 
+  command = ['docker', 'run', '--rm', '--privileged']
+  command += ['bash', '-c', 'echo "${0}"'.format(env_var_name)]
+  out, err_code = build_specified_commit.execute(command)
+  if err_code:
+    return None
+  return out
 
 
 def get_container():
