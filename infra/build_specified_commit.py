@@ -126,5 +126,5 @@ def execute(command, location=None, check_result=False):
     raise RuntimeError('Error: %s\n Command: %s\n Return code: %s\n Out: %s' %
                        (err, command, process.returncode, out))
   if out is not None:
-    out = out.decode('ascii')
+    out = out.decode('ascii').rstrip()
   return out, process.returncode
