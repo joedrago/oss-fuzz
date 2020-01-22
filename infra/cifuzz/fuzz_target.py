@@ -62,13 +62,8 @@ class FuzzTarget():
         utils.get_container()
     ]
     command += [
-        '-e',
-        'FUZZING_ENGINE=libfuzzer',
-        '-e',
-        'SANITIZER=address',
-        '-e',
-        'RUN_FUZZER_MODE=interactive',
-        '-e'
+        '-e', 'FUZZING_ENGINE=libfuzzer', '-e', 'SANITIZER=address', '-e',
+        'RUN_FUZZER_MODE=interactive', '-e'
         'OUT=' + os.path.dirname(self.target_path)
     ]
     command += [

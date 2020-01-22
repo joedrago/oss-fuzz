@@ -60,7 +60,7 @@ def main():
   run_fuzzer_parser = subparsers.add_parser(
       'run_fuzzers', help='Run an OSS-Fuzz projects fuzzers.')
   run_fuzzer_parser.add_argument('project_name')
-  run_fuzzer_parser.add_argument('fuzz_seconds')
+  run_fuzzer_parser.add_argument('fuzz_seconds', type=int)
   args = parser.parse_args()
 
   # Get the shared volume directory and creates required directory.
@@ -125,14 +125,8 @@ def build_fuzzers(args, git_workspace, out_dir):
 
   command = ['--cap-add', 'SYS_PTRACE', '--volumes-from', utils.get_container()]
   command.extend([
-      '-e',
-      'FUZZING_ENGINE=libfuzzer',
-      '-e',
-      'SANITIZER=address',
-      '-e',
-      'ARCHITECTURE=x86_64',
-      '-e',
-      'OUT=' + out_dir
+      '-e', 'FUZZING_ENGINE=libfuzzer', '-e', 'SANITIZER=address', '-e',
+      'ARCHITECTURE=x86_64', '-e', 'OUT=' + out_dir
   ])
 
   command.extend([
@@ -166,11 +160,11 @@ def run_fuzzers(args, out_dir):
     print('Error: No fuzzers were found in out directory.', file=sys.stderr)
     return False, False
 
-  fuzzer_timeout = int(int(args.fuzz_seconds) / len(fuzzer_paths))
-  fuzz_targets = []
-  for fuzzer_path in fuzzer_paths:
-    fuzz_targets.append(
-        fuzz_target.FuzzTarget(args.project_name, fuzzer_path, fuzzer_timeout))
+  fuzzer_timeout = int(args.fuzz_seconds / len(fuzzer_paths))
+  fuzz_targets = [
+      fuzz_target.FuzzTarget(args.project_name, fuzzer_path, fuzzer_timeout)
+      for fuzzer_path in fuzzer_paths
+  ]
 
   for target in fuzz_targets:
     test_case, stack_trace = target.start()
@@ -180,8 +174,7 @@ def run_fuzzers(args, out_dir):
       print("Fuzzer {} Detected Error: {}".format(target.target_name,
                                                   stack_trace),
             file=sys.stderr)
-      shutil.move(test_case,
-                  '/tmp/testcase')
+      shutil.move(test_case, '/tmp/testcase')
       return True, True
   return True, False
 
