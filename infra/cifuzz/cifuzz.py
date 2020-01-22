@@ -102,8 +102,8 @@ def build_fuzzers(args, git_workspace, out_dir):
     True if build succeeded or False on failure.
   """
   # TODO: Modify build_specified_commit function to return src dir.
-  src = os.environ['SRC']
-  out = os.environ['OUT']
+  src = '/src'
+  out = '/out'
 
   inferred_url, oss_fuzz_repo_name = build_specified_commit.detect_main_repo(
       args.project_name, repo_name=args.github_repo_name)
