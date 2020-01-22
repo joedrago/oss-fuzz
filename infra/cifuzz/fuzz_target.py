@@ -74,7 +74,7 @@ class FuzzTarget():
         'gcr.io/oss-fuzz-base/base-runner', 'bash', '-c',
         'ls $OUT && run_fuzzer {0}'.format(self.target_name)
     ]
-
+    print('DIRNAME: ', os.path.dirname(self.target_path))
     logging.debug('Running command: %s', ' '.join(command))
     process = subprocess.Popen(command,
                                stdout=subprocess.PIPE,
