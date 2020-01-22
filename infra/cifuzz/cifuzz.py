@@ -126,6 +126,7 @@ def build_fuzzers(args, git_workspace, out_dir):
       utils.get_container()]
   command.extend(['-e', 'FUZZING_ENGINE=libfuzzer', '-e',
   'SANITIZER=address', '-e', 'ARCHITECTURE=x86_64',])
+  
   command.extend(['gcr.io/oss-fuzz/%s' % args.project_name, '/bin/bash', '-c',])
   bash_command = 'rm -rf {0} && cp -r {1} {2} && compile && cp -r {3} {4}'.format(os.path.join(src, oss_fuzz_repo_name, '*'),
       os.path.join(git_workspace, '.'), src, os.path.join(out, '.'), out_dir)
