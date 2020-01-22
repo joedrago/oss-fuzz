@@ -72,7 +72,7 @@ class FuzzTarget():
     ]
     command += [
         'gcr.io/oss-fuzz-base/base-runner', 'bash', '-c',
-        'run_fuzzer {2}'.format(self.target_name)
+        'run_fuzzer {0}'.format(self.target_name)
     ]
 
     logging.debug('Running command: %s', ' '.join(command))
