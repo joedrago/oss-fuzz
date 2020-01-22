@@ -57,14 +57,14 @@ class FuzzTarget():
     Returns:
       (test_case, stack trace) if found or (None, None) on timeout or error.
     """
-    logging.debug('Fuzzer %s started.', self.target_name)
+    logging.debug('Fuzzer %s, started.', self.target_name)
     command = [
         'docker', 'run', '--rm', '--privileged', '--volumes-from',
         utils.get_container()
     ]
     command += [
         '-e', 'FUZZING_ENGINE=libfuzzer', '-e', 'SANITIZER=address', '-e',
-        'RUN_FUZZER_MODE=interactive', '-e'
+        'RUN_FUZZER_MODE=interactive', '-e',
         'OUT=' + self.out_dir
     ]
     command += [
@@ -78,9 +78,9 @@ class FuzzTarget():
     try:
       _, err = process.communicate(timeout=self.duration)
     except subprocess.TimeoutExpired:
-      logging.debug('Fuzzer %s finished with timeout.', self.target_name)
+      logging.debug('Fuzzer %s, finished with timeout.', self.target_name)
       return None, None
-    logging.debug('Fuzzer %s ended before timeout. ', self.target_name)
+    logging.debug('Fuzzer %s, ended before timeout. ', self.target_name)
     err_str = err.decode('ascii')
     test_case = self.get_test_case(err_str)
     if not test_case:
@@ -99,6 +99,7 @@ class FuzzTarget():
     """
     match = re.search(r'\bTest unit written to \.([^ ]+)',
                       error_string.rstrip())
+    print('Out Dir: ', self.out_dir)
     if match:
       return os.path.join(self.out_dir, match.group(1))
     return None
