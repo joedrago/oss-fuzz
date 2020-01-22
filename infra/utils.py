@@ -80,13 +80,16 @@ def get_env_var(project_name, env_var_name):
   Returns:
     None on error or the enviroment variable value.
   """
+  # Change to oss-fuzz main directory so helper.py runs correctly.
+  if os.getcwd() != helper.OSSFUZZ_DIR:
+    os.chdir(helper.OSSFUZZ_DIR)
   helper.build_image_impl(project_name)
   command = ['docker', 'run', '--rm', '--privileged']
-  command += ['bash', '-c', 'echo "${0}"'.format(env_var_name)]
+  command += ['gcr.io/oss-fuzz/' + project_name, 'bash', '-c', 'echo ${0}'.format(env_var_name)]
   out, err_code = build_specified_commit.execute(command)
   if err_code:
     return None
-  return out
+  return out.replace('\'', '')
 
 
 def get_container():

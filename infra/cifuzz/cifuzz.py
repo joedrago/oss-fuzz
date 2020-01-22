@@ -106,7 +106,6 @@ def build_fuzzers(args, git_workspace, out_dir):
   inferred_url, oss_fuzz_repo_name = build_specified_commit.detect_main_repo(
       args.project_name, repo_name=args.github_repo_name)
   src = utils.get_env_var(args.project_name, 'SRC')
-  print('ENV VAR: ', src)
   if not src:
     print('Could not get $SRC from project docker image. ', file=sys.stderr)
     return False
