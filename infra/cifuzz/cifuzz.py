@@ -40,6 +40,10 @@ class Status(enum.Enum):
   ERROR = 1
   BUG_FOUND = 2
 
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    stream=sys.stdout,
+    level=logging.DEBUG)
 
 def main():
   """Connects fuzzers with CI tools.
@@ -107,11 +111,11 @@ def build_fuzzers(args, git_workspace, out_dir):
       args.project_name, repo_name=args.github_repo_name)
   src = utils.get_env_var(args.project_name, 'SRC')
   if not src:
-    print('Could not get $SRC from project docker image. ', file=sys.stderr)
+    logging.error('Could not get $SRC from project docker image. ')
     return False
 
   if not inferred_url or not oss_fuzz_repo_name:
-    print('Error: Repo URL or name could not be determined.', file=sys.stderr)
+    logging.error('Error: Repo URL or name could not be determined.')
 
   # Checkout projects repo in the shared volume.
   build_repo_manager = repo_manager.RepoManager(inferred_url,
@@ -120,7 +124,7 @@ def build_fuzzers(args, git_workspace, out_dir):
   try:
     build_repo_manager.checkout_commit(args.commit_sha)
   except repo_manager.RepoManagerError:
-    print('Error: Specified commit does not exist.', file=sys.stderr)
+    logging.error('Error: Specified commit does not exist.')
     return False
 
   command = ['--cap-add', 'SYS_PTRACE', '--volumes-from', utils.get_container()]
@@ -140,7 +144,7 @@ def build_fuzzers(args, git_workspace, out_dir):
   command.append(bash_command)
 
   if helper.docker_run(command):
-    print('Error: Building fuzzers failed.', file=sys.stderr)
+    logging.error('Error: Building fuzzers failed.')
     return False
   return True
 
@@ -157,7 +161,7 @@ def run_fuzzers(args, out_dir):
   """
   fuzzer_paths = utils.get_fuzz_targets(out_dir)
   if not fuzzer_paths:
-    print('Error: No fuzzers were found in out directory.', file=sys.stderr)
+    logging.error('Error: No fuzzers were found in out directory.')
     return False, False
 
   fuzzer_timeout = int(args.fuzz_seconds / len(fuzzer_paths))
@@ -169,9 +173,9 @@ def run_fuzzers(args, out_dir):
   for target in fuzz_targets:
     test_case, stack_trace = target.start()
     if not test_case or not stack_trace:
-      print('Fuzzer {} finished running.'.format(target.target_name))
+      logging.debug('Fuzzer {} finished running.'.format(target.target_name))
     else:
-      print("Fuzzer {} Detected Error: {}".format(target.target_name,
+      logging.debug("Fuzzer {} Detected Error: {}".format(target.target_name,
                                                   stack_trace),
             file=sys.stderr)
       shutil.move(test_case, '/tmp/testcase')

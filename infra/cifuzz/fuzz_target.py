@@ -22,6 +22,10 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import utils
 
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    stream=sys.stdout,
+    level=logging.DEBUG)
 
 class FuzzTarget():
   """A class to manage a single fuzz target.
@@ -41,10 +45,6 @@ class FuzzTarget():
       target_path: The location of the fuzz target binary.
       duration: The length of time  in seconds the target should run.
     """
-    logging.basicConfig(
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        stream=sys.stdout,
-        level=logging.DEBUG)
     self.target_name = target_path.split('/')[-1]
     self.duration = duration
     self.project_name = project_name
@@ -98,8 +98,8 @@ class FuzzTarget():
       The error test case or None if not found.
     """
     match = re.search(r'\bTest unit written to \.([^ ]+)',
-                      error_string.rstrip())
-    print('Out Dir: ', self.out_dir)
+                      error_string)
+    print('Out Dir: ', os.path.join(self.out_dir, match.group(1)))
     if match:
       return os.path.join(self.out_dir, match.group(1))
     return None
