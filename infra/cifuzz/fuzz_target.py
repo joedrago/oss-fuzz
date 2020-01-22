@@ -49,6 +49,7 @@ class FuzzTarget():
     self.duration = duration
     self.project_name = project_name
     self.target_path = target_path
+    self.out_dir = os.path.dirname(self.target_path)
 
   def start(self):
     """Starts the fuzz target run for the length of time specified by duration.
@@ -64,7 +65,7 @@ class FuzzTarget():
     command += [
         '-e', 'FUZZING_ENGINE=libfuzzer', '-e', 'SANITIZER=address', '-e',
         'RUN_FUZZER_MODE=interactive', '-e'
-        'OUT=' + os.path.dirname(self.target_path)
+        'OUT=' + self.out_dir
     ]
     command += [
         'gcr.io/oss-fuzz-base/base-runner', 'bash', '-c',
@@ -81,14 +82,13 @@ class FuzzTarget():
       return None, None
     logging.debug('Fuzzer %s ended before timeout. ', self.target_name)
     err_str = err.decode('ascii')
-    test_case = FuzzTarget.get_test_case(err_str)
+    test_case = self.get_test_case(err_str)
     if not test_case:
       print('Error no test case found in stack trace.', file=sys.stderr)
       return None, None
     return test_case, err_str
 
-  @staticmethod
-  def get_test_case(error_string):
+  def get_test_case(self, error_string):
     """Gets the file from a fuzzer run stack trace.
 
     Args:
@@ -100,5 +100,5 @@ class FuzzTarget():
     match = re.search(r'\bTest unit written to \.([^ ]+)',
                       error_string.rstrip())
     if match:
-      return match.group(0)
+      return os.path.join(self.out_dir, match.group(1))
     return None
