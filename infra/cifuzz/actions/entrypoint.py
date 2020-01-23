@@ -37,7 +37,7 @@ def main():
   """
   oss_fuzz_project_name = os.environ['PROJECT_NAME']
   fuzz_seconds = int(os.environ['FUZZ_SECONDS'])
-  github_repo_name = os.path.basename(os.environ['GITHUB_REPOSITORY'])
+  github_repo_name = os.environ['GITHUB_REPOSITORY'].split('/')[-1]
   commit_sha = os.environ['GITHUB_SHA']
   print('Github repo name: ' + github_repo_name)
 
