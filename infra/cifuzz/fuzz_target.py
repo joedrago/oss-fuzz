@@ -75,7 +75,7 @@ class FuzzTarget:
     process = subprocess.Popen(command,
                                stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE)
-                               
+
     try:
       _, err = process.communicate(timeout=self.duration)
     except subprocess.TimeoutExpired:
@@ -98,8 +98,8 @@ class FuzzTarget:
     Returns:
       The error test case or None if not found.
     """
-    match = re.search(r'\bTest unit written to \.([^ ]+)', error_string)
+    match = re.search(r'\bTest unit written to \.([^\s]+)', error_string)
     if match:
       return os.path.join(self.out_dir,
-                   match.group(1).replace('/', '').rstrip())
+                   match.group(1).replace('/', '')
     return None
