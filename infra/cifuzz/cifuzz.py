@@ -62,7 +62,8 @@ def build_fuzzers(project_name, project_repo_name, commit_sha, git_workspace,
     True if build succeeded or False on failure.
   """
   # TODO: Modify build_specified_commit function to return src dir.
-
+  print('Project name: ', project_name)
+  print('Project repo_name', project_repo_name
   inferred_url, oss_fuzz_repo_name = build_specified_commit.detect_main_repo(
       project_name, repo_name=project_repo_name)
   src = utils.get_env_var(project_name, 'SRC')
@@ -74,7 +75,6 @@ def build_fuzzers(project_name, project_repo_name, commit_sha, git_workspace,
     logging.error('Error: Repo URL or name could not be determined.')
 
   # Checkout projects repo in the shared volume.
-  print('inferred url', inferred_url)
   build_repo_manager = repo_manager.RepoManager(inferred_url,
                                                 git_workspace,
                                                 repo_name=oss_fuzz_repo_name)
