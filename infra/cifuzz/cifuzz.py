@@ -62,10 +62,11 @@ def build_fuzzers(project_name, project_repo_name, commit_sha, git_workspace,
     True if build succeeded or False on failure.
   """
   # TODO: Modify build_specified_commit function to return src dir.
+  src = utils.get_env_var(project_name, 'SRC')
   print('Project name:', project_name)
   inferred_url, oss_fuzz_repo_name = build_specified_commit.detect_main_repo(
-      project_name, repo_name=project_repo_name)
-  src = utils.get_env_var(project_name, 'SRC')
+      project_name, repo_name=project_repo_name, src_dir=src)
+
   if not src:
     logging.error('Could not get $SRC from project docker image. ')
     return False
