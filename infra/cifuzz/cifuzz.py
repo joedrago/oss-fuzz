@@ -74,6 +74,7 @@ def build_fuzzers(project_name, project_repo_name, commit_sha, git_workspace,
     logging.error('Error: Repo URL or name could not be determined.')
 
   # Checkout projects repo in the shared volume.
+  print('inferred url', inferred_url)
   build_repo_manager = repo_manager.RepoManager(inferred_url,
                                                 git_workspace,
                                                 repo_name=oss_fuzz_repo_name)
