@@ -21,7 +21,7 @@ def main():
   """Runs OSS-Fuzz project's fuzzers for CI tools.
   This script is used to kick off the Github Actions CI tool. It is the
   entrypoint  of the Dockerfile in this directory. This action can be added to
-  any OSS-Fuzz project's workflow that uses Github. 
+  any OSS-Fuzz project's workflow that uses Github.
 
   Required environment variables:
     PROJECT_NAME: The name of OSS-Fuzz project.
