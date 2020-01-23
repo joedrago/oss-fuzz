@@ -33,14 +33,6 @@ import helper
 import repo_manager
 import utils
 
-
-class Status(enum.Enum):
-  """An Enum to store the possible return codes of the cifuzz module."""
-  SUCCESS = 0
-  ERROR = 1
-  BUG_FOUND = 2
-
-
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     stream=sys.stdout,

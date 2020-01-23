@@ -25,6 +25,11 @@ FUZZ_TARGET_SEARCH_STRING = 'LLVMFuzzerTestOneInput'
 VALID_TARGET_NAME = re.compile(r'^[a-zA-Z0-9_-]+$')
 
 
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    stream=sys.stdout,
+    level=logging.DEBUG)
+
 def is_fuzz_target_local(file_path):
   """Returns whether |file_path| is a fuzz target binary (local path).
   Copied from clusterfuzz src/python/bot/fuzzers/utils.py
@@ -86,7 +91,7 @@ def get_env_var(project_name, env_var_name):
   if os.getcwd() != helper.OSSFUZZ_DIR:
     os.chdir(helper.OSSFUZZ_DIR)
   if not helper.build_image_impl(project_name):
-    print('Error: building {} image.'.format(project_name))
+    logging.error('Error: building %s image.', project_name)
     return None
   command = ['docker', 'run', '--rm', '--privileged']
   command += [

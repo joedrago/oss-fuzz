@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Builds and runs specific OSS-Fuzz project's fuzzers for CI tools."""
+import logging
 import os
 import sys
 
@@ -19,6 +20,10 @@ import sys
 sys.path.append('/src/oss-fuzz/infra/cifuzz/')
 import cifuzz
 
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    stream=sys.stdout,
+    level=logging.DEBUG)
 
 def main():
   """Runs OSS-Fuzz project's fuzzers for CI tools.
@@ -39,7 +44,6 @@ def main():
   fuzz_seconds = int(os.environ['FUZZ_SECONDS'])
   github_repo_name = os.environ['GITHUB_REPOSITORY'].split('/')[-1]
   commit_sha = os.environ['GITHUB_SHA']
-  print('Github repo name: ' + github_repo_name)
 
   # Get the shared volume directory and creates required directory.
   if 'GITHUB_WORKSPACE' not in os.environ:
@@ -54,11 +58,17 @@ def main():
   # Build the specified project's fuzzers from the current repo state.
   if not cifuzz.build_fuzzers(oss_fuzz_project_name, github_repo_name, commit_sha,
                        git_workspace, out_dir):
-    print('Error building fuzzers.', file=sys.stdout)
+    logging.error('Error building fuzzers for project %s.', oss_fuzz_project_name)
     return 1
 
   # Run the specified project's fuzzers from the build.
-  cifuzz.run_fuzzers(oss_fuzz_project_name, fuzz_seconds, out_dir)
+  run_status, bug_found = cifuzz.run_fuzzers(oss_fuzz_project_name, fuzz_seconds, out_dir)
+  if not run_status:
+    logging.error('Error occured while running fuzzers for project %s.', project_name)
+    return 1
+  if bug_found:
+    logging.debug('Bug found.')
+    return 2
   return 0
 
 
