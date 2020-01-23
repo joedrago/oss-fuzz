@@ -98,9 +98,7 @@ class FuzzTarget:
       The error test case or None if not found.
     """
     match = re.search(r'\bTest unit written to \.([^ ]+)', error_string)
-    print('Out Dir: ',
-          os.path.join(self.out_dir,
-                       match.group(1).replace('/', '')))
     if match:
-      return os.path.join(self.out_dir, match.group(1))
+      return os.path.join(self.out_dir,
+                   match.group(1).replace('/', ''))
     return None
