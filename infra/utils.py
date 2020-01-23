@@ -85,6 +85,8 @@ def get_env_var(project_name, env_var_name):
   # Change to oss-fuzz main directory so helper.py runs correctly.
   if os.getcwd() != helper.OSSFUZZ_DIR:
     os.chdir(helper.OSSFUZZ_DIR)
+  print('CWD: ', os.getcwd())
+  print('ls: ', os.listdir())
   if helper.build_image_impl(project_name):
     print('Error: building {} image.'.format(project_name))
     return None
