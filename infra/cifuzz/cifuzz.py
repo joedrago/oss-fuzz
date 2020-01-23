@@ -181,7 +181,7 @@ def run_fuzzers(args, out_dir):
     else:
       logging.debug("Fuzzer %s, Detected Error: %s", target.target_name,
                     stack_trace)
-      shutil.move(test_case, '/tmp/testcase')
+      shutil.move(test_case, os.path.join(out_dir, 'testcase'))
       return True, True
   return True, False
 
