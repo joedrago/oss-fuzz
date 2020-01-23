@@ -81,8 +81,6 @@ def detect_main_repo(project_name, repo_name=None, commit=None, src_dir='/src'):
     The repo's origin, the repo's name.
   """
 
-
-  # TODO: Add infra for non hardcoded '/src'.
   if not repo_name and not commit:
     print('Error: can not detect main repo without a repo_name or a commit.')
     return None, None
@@ -92,7 +90,7 @@ def detect_main_repo(project_name, repo_name=None, commit=None, src_dir='/src'):
   # Change to oss-fuzz main directory so helper.py runs correctly.
   if os.getcwd() != helper.OSSFUZZ_DIR:
     os.chdir(helper.OSSFUZZ_DIR)
-  if helper.build_image_impl(project_name):
+  if not helper.build_image_impl(project_name):
     print('Error: building {} image failed.'.format(project_name),file=sys.stderr)
     return None, None
   docker_image_name = 'gcr.io/oss-fuzz/' + project_name
