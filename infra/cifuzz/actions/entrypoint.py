@@ -34,7 +34,7 @@ def main():
   """
   oss_fuzz_project_name = os.environ['PROJECT_NAME']
   fuzz_seconds = os.environ['FUZZ_SECONDS']
-  github_repo_name = os.environ['GITHUB_REPOSITORY'].rsplit('/', 1)[-1]
+  github_repo_name = os.path.basename(os.environ['GITHUB_REPOSITORY'])
   commit_sha = os.environ['GITHUB_SHA']
 
   # Build the specified project's fuzzers from the current repo state.

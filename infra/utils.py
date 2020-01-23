@@ -26,7 +26,10 @@ VALID_TARGET_NAME = re.compile(r'^[a-zA-Z0-9_-]+$')
 
 
 def is_fuzz_target_local(file_path):
-  """Returns whether |file_path| is a fuzz target binary (local path)."""
+  """Returns whether |file_path| is a fuzz target binary (local path).
+  Copied from clusterfuzz src/python/bot/fuzzers/utils.py
+  with slight modifications.
+  """
   filename, file_extension = os.path.splitext(os.path.basename(file_path))
   if not VALID_TARGET_NAME.match(filename):
     # Check fuzz target has a valid name (without any special chars).
