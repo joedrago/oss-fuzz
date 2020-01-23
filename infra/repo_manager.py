@@ -54,7 +54,7 @@ class RepoManager(object):
     if repo_name:
       self.repo_name = repo_name
     else:
-      self.repo_name = self.repo_url.split('/')[-1].strip('.git')
+      self.repo_name = os.path.basename(self.repo_url).strip('.git')
     self.repo_dir = os.path.join(self.base_dir, self.repo_name)
     self._clone()
 
@@ -68,7 +68,7 @@ class RepoManager(object):
       os.makedirs(self.base_dir)
     self.remove_repo()
     out, err = build_specified_commit.execute(
-        ['git', 'clone', self.repo_url],
+        ['git', 'clone', self.repo_url, self.repo_name],
         location=self.base_dir)
     if not self._is_git_repo():
       raise RepoManagerError('%s is not a git repo' % self.repo_url)
