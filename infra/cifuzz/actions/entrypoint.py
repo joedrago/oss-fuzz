@@ -36,7 +36,7 @@ def main():
     0 on success or 1 on Failure.
   """
   oss_fuzz_project_name = os.environ['PROJECT_NAME']
-  fuzz_seconds = os.environ['FUZZ_SECONDS']
+  fuzz_seconds = int(os.environ['FUZZ_SECONDS'])
   github_repo_name = os.path.basename (os.environ['GITHUB_REPOSITORY'])
   commit_sha = os.environ['GITHUB_SHA']
 
@@ -51,24 +51,10 @@ def main():
     os.mkdir(out_dir)
 
   # Build the specified project's fuzzers from the current repo state.
-  print('Building fuzzers\nproject: {0}\nrepo name: {1}\ncommit: {2}'.format(
-      oss_fuzz_project_name, github_repo_name, commit_sha))
   cifuzz.build_fuzzers(oss_fuzz_project_name, github_repo_name, commit_sha, git_workspace, out_dir)
 
   # Run the specified project's fuzzers from the build.
-  command = [
-      'python3', '/src/oss-fuzz/infra/cifuzz/cifuzz.py', 'run_fuzzers',
-      oss_fuzz_project_name, fuzz_seconds
-  ]
-  print('Running command: "{0}"'.format(' '.join(command)))
-  try:
-    subprocess.check_call(command)
-  except subprocess.CalledProcessError as err:
-    print('{0}'.format(str(err)), file=sys.stderr)
-    if err.returncode == 2:
-      print('Bug found. Uploading testcase.')
-    return err.returncode
-  return 0
+  cifuzz.run_fuzzers(oss_fuzz_project_name, fuzz_seconds,out_dir)
 
 
 if __name__ == '__main__':
