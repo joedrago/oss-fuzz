@@ -41,20 +41,20 @@ def main():
   Returns:
     0 on success or 1 on Failure.
   """
-  oss_fuzz_project_name = os.environ['PROJECT_NAME']
-  fuzz_seconds = int(os.environ['FUZZ_SECONDS'])
-  github_repo_name = os.path.basename(os.environ['GITHUB_REPOSITORY'])
-  commit_sha = os.environ['GITHUB_SHA']
+  oss_fuzz_project_name = os.environ.get('PROJECT_NAME')
+  fuzz_seconds = int(os.environ.get('FUZZ_SECONDS'))
+  github_repo_name = os.path.basename(os.environ.get('GITHUB_REPOSITORY'))
+  commit_sha = os.environ.get('GITHUB_SHA')
 
-  # Get the shared volume directory and creates required directory.
-  if 'GITHUB_WORKSPACE' not in os.environ:
+  # Get the shared volume directory and create required directorys.
+  workspace = os.environ.get('GITHUB_WORKSPACE')
+  if not workspace:
+    logging.error('This script needs to be run in the Github action context.')
     return 1
-  git_workspace = os.path.join(os.environ['GITHUB_WORKSPACE'], 'storage')
-  if not os.path.exists(git_workspace):
-    os.mkdir(git_workspace)
-  out_dir = os.path.join(os.environ['GITHUB_WORKSPACE'], 'out')
-  if not os.path.exists(out_dir):
-    os.mkdir(out_dir)
+  git_workspace = os.path.join(workspace, 'storage')
+  os.makedirs(git_workspace, exist_ok=True)
+  out_dir = os.path.join(workspace, 'out')
+  os.makedirs(out_dir, exist_ok=True)
 
   # Build the specified project's fuzzers from the current repo state.
   if not cifuzz.build_fuzzers(oss_fuzz_project_name, github_repo_name,

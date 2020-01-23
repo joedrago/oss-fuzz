@@ -112,13 +112,10 @@ def run_fuzzers(project_name, fuzz_seconds, out_dir):
     logging.error('Error: No fuzzers were found in out directory.')
     return False, False
 
-  fuzzer_timeout = int(fuzz_seconds / len(fuzzer_paths))
-  fuzz_targets = [
-      fuzz_target.FuzzTarget(project_name, fuzzer_path, fuzzer_timeout)
-      for fuzzer_path in fuzzer_paths
-  ]
+  fuzzer_timeout = fuzz_seconds // len(fuzzer_paths)
 
-  for target in fuzz_targets:
+  for fuzzer_path in fuzzer_paths:
+    target = fuzz_target.FuzzTarget(project_name, fuzzer_path, fuzzer_timeout)
     test_case, stack_trace = target.fuzz()
     if not test_case or not stack_trace:
       logging.debug('Fuzzer %s, finished running.', target.target_name)
