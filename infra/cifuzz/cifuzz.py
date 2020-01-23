@@ -18,7 +18,6 @@ This module helps CI tools do the following:
 Eventually it will be used to help CI tools determine which fuzzers to run.
 """
 
-import argparse
 import enum
 import logging
 import os
@@ -48,7 +47,8 @@ logging.basicConfig(
     level=logging.DEBUG)
 
 
-def build_fuzzers(project_name, project_repo_name, commit_sha, git_workspace, out_dir):
+def build_fuzzers(project_name, project_repo_name, commit_sha, git_workspace,
+                  out_dir):
   """Builds all of the fuzzers for a specific OSS-Fuzz project.
 
   Args:
@@ -138,7 +138,3 @@ def run_fuzzers(project_name, fuzz_seconds, out_dir):
       shutil.move(test_case, os.path.join(out_dir, 'testcase'))
       return True, True
   return True, False
-
-
-if __name__ == '__main__':
-  sys.exit(main())

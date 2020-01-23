@@ -13,12 +13,12 @@
 # limitations under the License.
 """Builds and runs specific OSS-Fuzz project's fuzzers for CI tools."""
 import os
-import subprocess
 import sys
 
 # pylint: disable=wrong-import-position
 sys.path.append('/src/oss-fuzz/infra/cifuzz/')
 import cifuzz
+
 
 def main():
   """Runs OSS-Fuzz project's fuzzers for CI tools.
@@ -37,12 +37,12 @@ def main():
   """
   oss_fuzz_project_name = os.environ['PROJECT_NAME']
   fuzz_seconds = int(os.environ['FUZZ_SECONDS'])
-  github_repo_name = os.path.basename (os.environ['GITHUB_REPOSITORY'])
+  github_repo_name = os.path.basename(os.environ['GITHUB_REPOSITORY'])
   commit_sha = os.environ['GITHUB_SHA']
 
   # Get the shared volume directory and creates required directory.
   if 'GITHUB_WORKSPACE' not in os.environ:
-    return Status.ERROR.value
+    return 1
   git_workspace = os.path.join(os.environ['GITHUB_WORKSPACE'], 'storage')
   if not os.path.exists(git_workspace):
     os.mkdir(git_workspace)
@@ -51,10 +51,12 @@ def main():
     os.mkdir(out_dir)
 
   # Build the specified project's fuzzers from the current repo state.
-  cifuzz.build_fuzzers(oss_fuzz_project_name, github_repo_name, commit_sha, git_workspace, out_dir)
+  cifuzz.build_fuzzers(oss_fuzz_project_name, github_repo_name, commit_sha,
+                       git_workspace, out_dir)
 
   # Run the specified project's fuzzers from the build.
-  cifuzz.run_fuzzers(oss_fuzz_project_name, fuzz_seconds,out_dir)
+  cifuzz.run_fuzzers(oss_fuzz_project_name, fuzz_seconds, out_dir)
+  return 0
 
 
 if __name__ == '__main__':
