@@ -175,7 +175,7 @@ def run_fuzzers(args, out_dir):
   ]
 
   for target in fuzz_targets:
-    test_case, stack_trace = target.start()
+    test_case, stack_trace = target.fuzz()
     if not test_case or not stack_trace:
       logging.debug('Fuzzer %s, finished running.', target.target_name)
     else:

@@ -1,4 +1,4 @@
-# Copyright 2019 Google LLC
+# Copyright 2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -63,7 +63,6 @@ def get_fuzz_targets(path):
   for root, _, _ in os.walk(path):
     for filename in os.listdir(path):
       file_path = os.path.join(root, filename)
-      print(file_path)
       if is_fuzz_target_local(file_path):
         fuzz_target_paths.append(file_path)
 

@@ -52,24 +52,20 @@ class FuzzTarget:
     self.target_path = target_path
     self.out_dir = os.path.dirname(self.target_path)
 
-  def start(self):
+  def fuzz(self):
     """Starts the fuzz target run for the length of time specified by duration.
 
     Returns:
       (test_case, stack trace) if found or (None, None) on timeout or error.
     """
     logging.debug('Fuzzer %s, started.', self.target_name)
+    bash_command = 'run_fuzzer {0}'.format(self.target_name)
     command = [
         'docker', 'run', '--rm', '--privileged', '--volumes-from',
-        utils.get_container()
-    ]
-    command += [
-        '-e', 'FUZZING_ENGINE=libfuzzer', '-e', 'SANITIZER=address', '-e',
-        'RUN_FUZZER_MODE=interactive', '-e', 'OUT=' + self.out_dir
-    ]
-    command += [
-        'gcr.io/oss-fuzz-base/base-runner', 'bash', '-c',
-        'run_fuzzer {0}'.format(self.target_name)
+        utils.get_container(), '-e', 'FUZZING_ENGINE=libfuzzer', '-e',
+        'SANITIZER=address', '-e', 'RUN_FUZZER_MODE=interactive', '-e',
+        'OUT=' + self.out_dir, 'gcr.io/oss-fuzz-base/base-runner', 'bash', '-c',
+        bash_command
     ]
     logging.debug('Running command: %s', ' '.join(command))
     process = subprocess.Popen(command,
@@ -81,7 +77,7 @@ class FuzzTarget:
     except subprocess.TimeoutExpired:
       logging.debug('Fuzzer %s, finished with timeout.', self.target_name)
       return None, None
-    logging.debug('Fuzzer %s, ended before timeout. ', self.target_name)
+    logging.debug('Fuzzer %s, ended before timeout.', self.target_name)
     err_str = err.decode('ascii')
     test_case = self.get_test_case(err_str)
     if not test_case:
@@ -101,6 +97,5 @@ class FuzzTarget:
     match = re.search(r'\bTest unit written to \.\/([^\s]+)', error_string)
     print('Matches: ' + match.group(1))
     if match:
-      return os.path.join(self.out_dir,
-                   match.group(1))
+      return os.path.join(self.out_dir, match.group(1))
     return None
