@@ -52,8 +52,10 @@ def main():
     os.mkdir(out_dir)
 
   # Build the specified project's fuzzers from the current repo state.
-  cifuzz.build_fuzzers(oss_fuzz_project_name, github_repo_name, commit_sha,
-                       git_workspace, out_dir)
+  if not cifuzz.build_fuzzers(oss_fuzz_project_name, github_repo_name, commit_sha,
+                       git_workspace, out_dir):
+    print('Error building fuzzers.', file=sys.stdout)
+    return 1
 
   # Run the specified project's fuzzers from the build.
   cifuzz.run_fuzzers(oss_fuzz_project_name, fuzz_seconds, out_dir)

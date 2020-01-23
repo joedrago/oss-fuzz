@@ -63,20 +63,16 @@ def build_fuzzers(project_name, project_repo_name, commit_sha, git_workspace,
   """
   # TODO: Modify build_specified_commit function to return src dir.
   src = utils.get_env_var(project_name, 'SRC')
-  print('Project name:', project_name)
+  if not src:
+    logging.error('Could not get $SRC from project docker image. ')
+    return False
+
   inferred_url, oss_fuzz_repo_name = build_specified_commit.detect_main_repo(
       project_name, repo_name=project_repo_name, src_dir=src)
   if not inferred_url or not oss_fuzz_repo_name:
     logging.error('Could not detect repo from project %s.', project_name)
     return False
-
-  if not src:
-    logging.error('Could not get $SRC from project docker image. ')
-    return False
-
-  if not inferred_url or not oss_fuzz_repo_name:
-    logging.error('Error: Repo URL or name could not be determined.')
-
+    
   # Checkout projects repo in the shared volume.
   build_repo_manager = repo_manager.RepoManager(inferred_url,
                                                 git_workspace,
