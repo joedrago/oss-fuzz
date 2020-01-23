@@ -128,7 +128,8 @@ def build_fuzzers(args, git_workspace, out_dir):
     build_repo_manager.checkout_commit(args.commit_sha)
   except repo_manager.RepoManagerError:
     logging.error('Error: Specified commit does not exist.')
-    return False
+    # WARNING: Remove when done testing
+    #return False
 
   command = ['--cap-add', 'SYS_PTRACE', '--volumes-from', utils.get_container()]
   command.extend([
