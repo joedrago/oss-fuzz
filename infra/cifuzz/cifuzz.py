@@ -18,7 +18,6 @@ This module helps CI tools do the following:
 Eventually it will be used to help CI tools determine which fuzzers to run.
 """
 
-import enum
 import logging
 import os
 import shutil

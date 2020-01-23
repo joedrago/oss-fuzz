@@ -91,7 +91,8 @@ def detect_main_repo(project_name, repo_name=None, commit=None, src_dir='/src'):
   if os.getcwd() != helper.OSSFUZZ_DIR:
     os.chdir(helper.OSSFUZZ_DIR)
   if not helper.build_image_impl(project_name):
-    print('Error: building {} image failed.'.format(project_name),file=sys.stderr)
+    print('Error: building {} image failed.'.format(project_name),
+          file=sys.stderr)
     return None, None
   docker_image_name = 'gcr.io/oss-fuzz/' + project_name
   command_to_run = [

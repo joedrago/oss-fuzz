@@ -25,6 +25,7 @@ logging.basicConfig(
     stream=sys.stdout,
     level=logging.DEBUG)
 
+
 def main():
   """Runs OSS-Fuzz project's fuzzers for CI tools.
   This script is used to kick off the Github Actions CI tool. It is the
@@ -56,15 +57,18 @@ def main():
     os.mkdir(out_dir)
 
   # Build the specified project's fuzzers from the current repo state.
-  if not cifuzz.build_fuzzers(oss_fuzz_project_name, github_repo_name, commit_sha,
-                       git_workspace, out_dir):
-    logging.error('Error building fuzzers for project %s.', oss_fuzz_project_name)
+  if not cifuzz.build_fuzzers(oss_fuzz_project_name, github_repo_name,
+                              commit_sha, git_workspace, out_dir):
+    logging.error('Error building fuzzers for project %s.',
+                  oss_fuzz_project_name)
     return 1
 
   # Run the specified project's fuzzers from the build.
-  run_status, bug_found = cifuzz.run_fuzzers(oss_fuzz_project_name, fuzz_seconds, out_dir)
+  run_status, bug_found = cifuzz.run_fuzzers(oss_fuzz_project_name,
+                                             fuzz_seconds, out_dir)
   if not run_status:
-    logging.error('Error occured while running fuzzers for project %s.', project_name)
+    logging.error('Error occured while running fuzzers for project %s.',
+                  oss_fuzz_project_name)
     return 1
   if bug_found:
     logging.debug('Bug found.')
