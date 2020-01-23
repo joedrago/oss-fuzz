@@ -97,7 +97,7 @@ def main():
   return Status.ERROR.value
 
 
-def build_fuzzers(args, git_workspace, out_dir):
+def build_fuzzers(project_name, github_repo_name, commit_sha, git_workspace, out_dir):
   """Builds all of the fuzzers for a specific OSS-Fuzz project.
 
   Args:
