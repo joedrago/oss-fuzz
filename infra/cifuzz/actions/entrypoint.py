@@ -39,6 +39,7 @@ def main():
   fuzz_seconds = int(os.environ['FUZZ_SECONDS'])
   github_repo_name = os.path.basename(os.environ['GITHUB_REPOSITORY'])
   commit_sha = os.environ['GITHUB_SHA']
+  print('Github repo name: ' + github_repo_name)
 
   # Get the shared volume directory and creates required directory.
   if 'GITHUB_WORKSPACE' not in os.environ:
