@@ -98,7 +98,8 @@ class FuzzTarget:
     Returns:
       The error test case or None if not found.
     """
-    match = re.search(r'\bTest unit written to \./([^\s]+)', error_string)
+    match = re.search(r'\bTest unit written to \.\/([^\s]+)', error_string)
+    print('Matches: ' + match.group(1))
     if match:
       return os.path.join(self.out_dir,
                    match.group(1))
