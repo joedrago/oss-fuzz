@@ -86,7 +86,9 @@ def detect_main_repo(project_name, repo_name=None, commit=None, src_dir='/src'):
   if repo_name and commit:
     print('Both repo name and commit specific. Using repo name for detection.')
 
-  helper.build_image_impl(project_name)
+  if helper.build_image_impl(project_name):
+    print('Error: building {} image failed.',file=sys.stderr)
+    return None, None
   docker_image_name = 'gcr.io/oss-fuzz/' + project_name
   command_to_run = [
       'docker', 'run', '--rm', '-t', docker_image_name, 'python3',
