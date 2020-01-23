@@ -75,6 +75,7 @@ class FuzzTarget:
     process = subprocess.Popen(command,
                                stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE)
+                               
     try:
       _, err = process.communicate(timeout=self.duration)
     except subprocess.TimeoutExpired:
