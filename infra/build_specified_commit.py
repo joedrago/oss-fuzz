@@ -20,6 +20,7 @@ like continuious integration fuzzing and bisection to find errors
 import os
 import re
 import subprocess
+import sys
 
 import helper
 
@@ -90,7 +91,7 @@ def detect_main_repo(project_name, repo_name=None, commit=None, src_dir='/src'):
 
   # Change to oss-fuzz main directory so helper.py runs correctly.
   if os.getcwd() != helper.OSSFUZZ_DIR:
-    os.chdir(helper.OSSFUZZ_DIR)  
+    os.chdir(helper.OSSFUZZ_DIR)
   if helper.build_image_impl(project_name):
     print('Error: building {} image failed.'.format(project_name),file=sys.stderr)
     return None, None
