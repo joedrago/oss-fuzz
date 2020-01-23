@@ -86,7 +86,7 @@ def get_env_var(project_name, env_var_name):
   if os.getcwd() != helper.OSSFUZZ_DIR:
     os.chdir(helper.OSSFUZZ_DIR)
   if helper.build_image_impl(project_name):
-    printf('Error: building {} image.'.format(project_name))
+    print('Error: building {} image.'.format(project_name))
     return None
   command = ['docker', 'run', '--rm', '--privileged']
   command += [

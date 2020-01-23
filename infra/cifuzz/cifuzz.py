@@ -61,7 +61,6 @@ def build_fuzzers(project_name, project_repo_name, commit_sha, git_workspace,
   Returns:
     True if build succeeded or False on failure.
   """
-  # TODO: Modify build_specified_commit function to return src dir.
   src = utils.get_env_var(project_name, 'SRC')
   if not src:
     logging.error('Could not get $SRC from project docker image. ')
@@ -72,7 +71,7 @@ def build_fuzzers(project_name, project_repo_name, commit_sha, git_workspace,
   if not inferred_url or not oss_fuzz_repo_name:
     logging.error('Could not detect repo from project %s.', project_name)
     return False
-    
+
   # Checkout projects repo in the shared volume.
   build_repo_manager = repo_manager.RepoManager(inferred_url,
                                                 git_workspace,
@@ -81,7 +80,7 @@ def build_fuzzers(project_name, project_repo_name, commit_sha, git_workspace,
     build_repo_manager.checkout_commit(commit_sha)
   except repo_manager.RepoManagerError:
     logging.error('Error: Specified commit does not exist.')
-    # WARNING: Remove when done testing
+    # TODO: Remove when done testing
     #return False
 
   command = ['--cap-add', 'SYS_PTRACE', '--volumes-from', utils.get_container()]
