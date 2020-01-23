@@ -100,5 +100,5 @@ class FuzzTarget:
     match = re.search(r'\bTest unit written to \.([^ ]+)', error_string)
     if match:
       return os.path.join(self.out_dir,
-                   match.group(1).replace('/', ''))
+                   match.group(1).replace('/', '').rstrip())
     return None
