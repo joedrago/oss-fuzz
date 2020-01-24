@@ -72,7 +72,7 @@ def build_fuzzers(project_name, project_repo_name, commit_sha, git_workspace,
   except repo_manager.RepoManagerError:
     logging.error('Error: Specified commit does not exist.')
     # NOTE: remove return statement for testing.
-    #return False
+    return False
 
   command = ['--cap-add', 'SYS_PTRACE', '--volumes-from', utils.get_container()]
   command.extend([
