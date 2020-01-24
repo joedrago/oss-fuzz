@@ -26,11 +26,11 @@ ALLOWED_FUZZ_TARGET_EXTENSIONS = ['', '.exe']
 FUZZ_TARGET_SEARCH_STRING = 'LLVMFuzzerTestOneInput'
 VALID_TARGET_NAME = re.compile(r'^[a-zA-Z0-9_-]+$')
 
+
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     stream=sys.stdout,
     level=logging.DEBUG)
-
 
 def is_fuzz_target_local(file_path):
   """Returns whether |file_path| is a fuzz target binary (local path).
@@ -56,7 +56,9 @@ def is_fuzz_target_local(file_path):
     return False
 
   with open(file_path, 'rb') as file_handle:
-    return file_handle.read().find(FUZZ_TARGET_SEARCH_STRING.encode())
+    if file_handle.read().find(FUZZ_TARGET_SEARCH_STRING.encode()) == -1:
+      return False
+  return True
 
 
 def get_fuzz_targets(path):
@@ -113,7 +115,8 @@ def get_container():
     Container name or None if not in a container.
   """
   with open('/proc/self/cgroup') as file_handle:
-    if 'docker' in file_handle.read():
-      with open('/etc/hostname') as file_handle:
-        return file_handle.read().strip()
+    if 'docker' not in file_handle.read():
+      return None
+    with open('/etc/hostname') as file_handle:
+      return file_handle.read().strip()
   return None
