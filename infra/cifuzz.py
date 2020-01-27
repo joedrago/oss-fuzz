@@ -22,9 +22,9 @@ import argparse
 import os
 import tempfile
 
-import build_specified_commit
-import repo_manager
 import helper
+import repo_manager
+import utils
 
 
 def main():
@@ -70,17 +70,17 @@ def build_fuzzers(args):
 
   # TODO: Fix return value bubble to actually handle errors.
   with tempfile.TemporaryDirectory() as tmp_dir:
-    inferred_url, repo_name = build_specified_commit.detect_main_repo(
+    inferred_url, repo_name = utils.detect_main_repo(
         args.project_name, repo_name=args.repo_name)
     build_repo_manager = repo_manager.RepoManager(inferred_url,
                                                   tmp_dir,
                                                   repo_name=repo_name)
-    build_data = build_specified_commit.BuildData(
+    build_data = utils.BuildData(
         project_name=args.project_name,
         sanitizer='address',
         engine='libfuzzer',
         architecture='x86_64')
-    return build_specified_commit.build_fuzzers_from_commit(
+    return utils.build_fuzzers_from_commit(
         args.commit_sha, build_repo_manager, build_data) == 0
 
 
