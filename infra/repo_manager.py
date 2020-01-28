@@ -31,7 +31,7 @@ class RepoManagerError(Exception):
   """Class to describe the exceptions in RepoManager."""
 
 
-class RepoManager(object):
+class RepoManager:
   """Class to manage git repos from python.
 
   Attributes:
@@ -64,10 +64,9 @@ class RepoManager(object):
       Raises:
         RepoManagerError if the repo was not able to be cloned
     """
-    if not os.path.exists(self.base_dir):
-      os.makedirs(self.base_dir)
+    os.makedirs(self.base_dir, exist_ok=True)
     self.remove_repo()
-    out, err = utils.execute(['git', 'clone', self.repo_url],
+    out, err = utils.execute(['git', 'clone', self.repo_url, self.repo_name],
                              location=self.base_dir)
     if not self._is_git_repo():
       raise RepoManagerError('%s is not a git repo' % self.repo_url)
@@ -167,6 +166,7 @@ class RepoManager(object):
     utils.execute(['git', 'checkout', '-f', commit],
                   self.repo_dir,
                   check_result=True)
+    print(utils.execute(['ls', '-ld']))
     utils.execute(['git', 'clean', '-fxd'], self.repo_dir, check_result=True)
     if self.get_current_commit() != commit:
       raise RepoManagerError('Error checking out commit %s' % commit)
