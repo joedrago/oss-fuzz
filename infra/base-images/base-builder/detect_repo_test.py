@@ -13,9 +13,9 @@
 # limitations under the License.
 """Test the functionality of the detect_repo module.
 This will consist of the following functional test:
-  1. Determine if an OSS-Fuzz projects main repo can be detected from example
+  1. Determine if an OSS-Fuzz project's main repo can be detected from example
   commits.
-  2. Determine if an OSS-Fuzz project main repo can be detected from a
+  2. Determine if an OSS-Fuzz project's main repo can be detected from a
   repo name.
 """
 import os
@@ -43,7 +43,6 @@ class DetectRepoTest(unittest.TestCase):
     """Tests that the main repo can be inferred based on an example commit."""
 
     with tempfile.TemporaryDirectory() as tmp_dir:
-      # Construct example repo's to check for commits.
       for example_repo in test_repos.TEST_REPOS:
         repo_manager.RepoManager(example_repo.git_url, tmp_dir)
         self.check_with_repo(example_repo.git_url,
@@ -61,7 +60,7 @@ class DetectRepoTest(unittest.TestCase):
                              tmp_dir)
 
   def check_with_repo(self, repo_origin, repo_name, tmp_dir, commit=None):
-    """Checks the detect repo's main method for a specific set of inputs.
+    """Checks the detect repo's functionality with a specific src location.
 
     Args:
       repo_origin: URL of the git repo.
