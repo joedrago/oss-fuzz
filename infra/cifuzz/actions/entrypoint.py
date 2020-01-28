@@ -17,6 +17,7 @@ import os
 import sys
 
 # pylint: disable=wrong-import-position
+print(os.listdir(os.path.join(os.environ['OSS_FUZZ_HOME'], 'oss-fuzz', 'infra'))
 sys.path.append(os.path.join(os.environ['OSS_FUZZ_HOME'], 'oss-fuzz', 'infra', 'cifuzz'))
 import cifuzz
 
