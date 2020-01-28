@@ -17,12 +17,12 @@ import os
 import sys
 
 # pylint: disable=wrong-import-position
-sys.path.append('/src/oss-fuzz/infra/cifuzz/')
+sys.path.append(os.path.join(os.environ['OSS_FUZZ_HOME']),'oss-fuzz', 'infra','cifuzz')
 import cifuzz
 
+# TODO: Turn default logging to WARNING when CIFuzz is stable
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    stream=sys.stdout,
     level=logging.DEBUG)
 
 
@@ -42,7 +42,7 @@ def main():
     0 on success or 1 on Failure.
   """
   oss_fuzz_project_name = os.environ.get('PROJECT_NAME')
-  fuzz_seconds = int(os.environ.get('FUZZ_SECONDS'))
+  fuzz_seconds = int(os.environ.get('FUZZ_SECONDS', 360))
   github_repo_name = os.path.basename(os.environ.get('GITHUB_REPOSITORY'))
   commit_sha = os.environ.get('GITHUB_SHA')
 
@@ -71,7 +71,8 @@ def main():
                   oss_fuzz_project_name)
     return 1
   if bug_found:
-    logging.debug('Bug found.')
+    logging.info('Bug found.')
+    # Return 2 when a bug was found by a fuzzer causing the CI to fail.
     return 2
   return 0
 

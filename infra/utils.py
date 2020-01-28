@@ -17,7 +17,6 @@ import logging
 import os
 import re
 import stat
-import sys
 
 import build_specified_commit
 import helper
@@ -26,10 +25,12 @@ ALLOWED_FUZZ_TARGET_EXTENSIONS = ['', '.exe']
 FUZZ_TARGET_SEARCH_STRING = 'LLVMFuzzerTestOneInput'
 VALID_TARGET_NAME = re.compile(r'^[a-zA-Z0-9_-]+$')
 
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    stream=sys.stdout,
-    level=logging.DEBUG)
+
+def chdir_to_base():
+  """Changes cwd to OSS-Fuzz home directory."""
+  # Change to oss-fuzz main directory so helper.py runs correctly.
+  if os.getcwd() != helper.OSSFUZZ_DIR:
+    os.chdir(helper.OSSFUZZ_DIR)
 
 
 def is_fuzz_target_local(file_path):
@@ -90,12 +91,10 @@ def get_env_var(project_name, env_var_name):
   Returns:
     None on error or the enviroment variable value.
   """
-  if ' ' in env_var_name or '-' in env_var_name or not env_var_name.rstrip():
+  chdir_to_base()
+  if not env_var_name.isalpha():
     return None
 
-  # Change to oss-fuzz main directory so helper.py runs correctly.
-  if os.getcwd() != helper.OSSFUZZ_DIR:
-    os.chdir(helper.OSSFUZZ_DIR)
   if not helper.build_image_impl(project_name):
     logging.error('Error: building %s image.', project_name)
     return None
@@ -112,8 +111,10 @@ def get_env_var(project_name, env_var_name):
   return None
 
 
-def get_container():
+def get_container_name():
   """Gets the name of the current docker container you are in.
+  /proc/self/cgroup can be used to check control groups e.g. Docker.
+  See: https://docs.docker.com/config/containers/runmetrics/ for more info.
 
   Returns:
     Container name or None if not in a container.
@@ -121,5 +122,5 @@ def get_container():
   with open('/proc/self/cgroup') as file_handle:
     if 'docker' not in file_handle.read():
       return None
-    with open('/etc/hostname') as file_handle:
-      return file_handle.read().strip()
+  with open('/etc/hostname') as file_handle:
+    return file_handle.read().strip()

@@ -40,8 +40,7 @@ class IsFuzzTargetLocalUnitTest(unittest.TestCase):
 
   def test_valid_filepath(self):
     """Checks is_fuzz_target_local function with a valid filepath."""
-    if os.getcwd() != helper.OSSFUZZ_DIR:
-      os.chdir(helper.OSSFUZZ_DIR)
+    utils.chdir_to_base()
     helper.build_fuzzers_impl(EXAMPLE_PROJECT,
                               True,
                               'libfuzzer',
@@ -65,8 +64,7 @@ class GetFuzzTargetsUnitTest(unittest.TestCase):
 
   def test_valid_filepath(self):
     """Tests that fuzz targets can be retrieved once the fuzzers are built."""
-    if os.getcwd() != helper.OSSFUZZ_DIR:
-      os.chdir(helper.OSSFUZZ_DIR)
+    utils.chdir_to_base()
     helper.build_fuzzers_impl(EXAMPLE_PROJECT,
                               True,
                               'libfuzzer',
@@ -87,8 +85,7 @@ class GetFuzzTargetsUnitTest(unittest.TestCase):
 
   def test_invalid_filepath(self):
     """Tests what get_fuzz_targets return when invalid filepath is used."""
-    if os.getcwd() != helper.OSSFUZZ_DIR:
-      os.chdir(helper.OSSFUZZ_DIR)
+    utils.chdir_to_base()
     helper.build_fuzzers_impl(EXAMPLE_PROJECT,
                               True,
                               'libfuzzer',
@@ -111,9 +108,9 @@ class GetEnvVarUnitTest(unittest.TestCase):
 
   def test_invalid_project(self):
     """Tests function with invalid project."""
-    src_val = utils.get_env_var('not a real project', 'SRC')
+    src_val = utils.get_env_var('notarealproject', 'SRC')
     self.assertIsNone(src_val)
-    src_val = utils.get_env_var('not-a-real-project', 'SRC')
+    src_val = utils.get_env_var('not/a/real/project', 'SRC')
     self.assertIsNone(src_val)
     src_val = utils.get_env_var('', 'SRC')
     self.assertIsNone(src_val)

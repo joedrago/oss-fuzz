@@ -32,9 +32,9 @@ import helper
 import repo_manager
 import utils
 
+# TODO: Turn default logging to WARNING when CIFuzz is stable
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    stream=sys.stdout,
     level=logging.DEBUG)
 
 
@@ -52,20 +52,20 @@ def build_fuzzers(project_name, project_repo_name, commit_sha, git_workspace,
   Returns:
     True if build succeeded or False on failure.
   """
-  if not os.path.exists(git_workspace) or not os.path.exists(out_dir):
-    logging.error('Invalid workspace or out directory.')
+  if not os.path.exists(git_workspace):
+    logging.error('Invalid git workspace: %s.', format(git_workspace))
+    return False
+  if not os.path.exists(out_dir):
+    logging.error('Invalid out directory %s.', format(out_dir))
     return False
 
-  src = utils.get_env_var(project_name, 'SRC')
-  if not src:
-    logging.error('Could not get $SRC from project docker image. ')
-    return False
-
-  inferred_url, oss_fuzz_repo_name = build_specified_commit.detect_main_repo(
-      project_name, repo_name=project_repo_name, src_dir=src)
-  if not inferred_url or not oss_fuzz_repo_name:
+  inferred_url, oss_fuzz_repo_path = build_specified_commit.detect_main_repo(
+      project_name, repo_name=project_repo_name)
+  if not inferred_url or not oss_fuzz_repo_path:
     logging.error('Could not detect repo from project %s.', project_name)
     return False
+  src_in_docker = os.path.dirname(oss_fuzz_repo_path)
+  oss_fuzz_repo_name = os.path.basename(oss_fuzz_repo_path)
 
   # Checkout projects repo in the shared volume.
   build_repo_manager = repo_manager.RepoManager(inferred_url,
@@ -74,25 +74,25 @@ def build_fuzzers(project_name, project_repo_name, commit_sha, git_workspace,
   try:
     build_repo_manager.checkout_commit(commit_sha)
   except repo_manager.RepoManagerError:
-    logging.error('Error: Specified commit does not exist.')
-    # NOTE: remove return statement for testing.
-    #return False
+    logging.error('Specified commit does not exist.')
+    # NOTE: Remove return statement for testing.
+    return False
 
   command = [
       '--cap-add', 'SYS_PTRACE', '-e', 'FUZZING_ENGINE=libfuzzer', '-e',
       'SANITIZER=address', '-e', 'ARCHITECTURE=x86_64'
   ]
-  container = utils.get_container()
+  container = utils.get_container_name()
   if container:
     command += ['-e', 'OUT=' + out_dir, '--volumes-from', container]
     bash_command = 'rm -rf {0} && cp -r {1} {2} && compile'.format(
-        os.path.join(src, oss_fuzz_repo_name, '*'),
-        os.path.join(git_workspace, oss_fuzz_repo_name), src)
+        os.path.join(src_in_docker, oss_fuzz_repo_name, '*'),
+        os.path.join(git_workspace, oss_fuzz_repo_name), src_in_docker)
   else:
     command += [
         '-e', 'OUT=' + '/out', '-v',
         '%s:%s' % (os.path.join(git_workspace, oss_fuzz_repo_name),
-                   os.path.join(src, oss_fuzz_repo_name)), '-v',
+                   os.path.join(src_in_docker, oss_fuzz_repo_name)), '-v',
         '%s:%s' % (out_dir, '/out')
     ]
     bash_command = 'compile'
@@ -105,13 +105,13 @@ def build_fuzzers(project_name, project_repo_name, commit_sha, git_workspace,
   command.append(bash_command)
 
   if helper.docker_run(command):
-    logging.error('Error: Building fuzzers failed.')
+    logging.error('Building fuzzers failed.')
     return False
   return True
 
 
 def run_fuzzers(project_name, fuzz_seconds, out_dir):
-  """Runs a all fuzzers for a specific OSS-Fuzz project.
+  """Runs all fuzzers for a specific OSS-Fuzz project.
 
   Args:
     project_name: The name of the OSS-Fuzz project being built.
@@ -119,31 +119,34 @@ def run_fuzzers(project_name, fuzz_seconds, out_dir):
     out_dir: The location in the shared volume to store output artifacts.
 
   Returns:
-    (True if run was successful, True if bug was found False if not).
+    (True if run was successful, True if bug was found).
   """
   if not out_dir or not os.path.exists(out_dir):
-    logging.error('Error: Unreachable out_dir argument.')
+    logging.error('Unreachable out_dir argument %s.', format(out_dir))
     return False, False
 
   if not fuzz_seconds or fuzz_seconds < 1:
-    logging.error('Error: fuzz_seconds argument must be greater than 1.')
+    logging.error('Fuzz_seconds argument must be greater than 1, but was: %s.',
+                  format(fuzz_seconds))
     return False, False
 
   fuzzer_paths = utils.get_fuzz_targets(out_dir)
   if not fuzzer_paths:
-    logging.error('Error: No fuzzers were found in out directory.')
+    logging.error('No fuzzers were found in out directory: %s.',
+                  format(out_dir))
     return False, False
 
-  fuzzer_timeout = fuzz_seconds // len(fuzzer_paths)
+  fuzz_seconds_per_target = fuzz_seconds // len(fuzzer_paths)
 
   for fuzzer_path in fuzzer_paths:
-    target = fuzz_target.FuzzTarget(project_name, fuzzer_path, fuzzer_timeout)
+    target = fuzz_target.FuzzTarget(project_name, fuzzer_path,
+                                    fuzz_seconds_per_target, out_dir)
     test_case, stack_trace = target.fuzz()
     if not test_case or not stack_trace:
-      logging.debug('Fuzzer %s, finished running.', target.target_name)
+      logging.info('Fuzzer %s, finished running.', target.target_name)
     else:
-      logging.debug("Fuzzer %s, Detected Error: %s", target.target_name,
-                    stack_trace)
+      logging.info("Fuzzer %s, detected error: %s.", target.target_name,
+                   stack_trace)
       shutil.move(test_case, os.path.join(out_dir, 'testcase'))
       return True, True
   return True, False
