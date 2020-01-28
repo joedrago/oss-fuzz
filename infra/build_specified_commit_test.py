@@ -37,29 +37,29 @@ class BuildImageIntegrationTests(unittest.TestCase):
     The old commit should show the error when its fuzzers run and the new one
     should not.
     """
-    test_data = os.path.join(TEST_DIR_PATH, 'testcases', 'yara_test_data')
+    test_data = os.path.join(TEST_DIR_PATH, 'testcases', 'usrsctp_test_data')
 
     with tempfile.TemporaryDirectory() as tmp_dir:
-      project_name = 'yara'
-      old_commit = 'f79be4f2330f4b89ea2f42e1c44ca998c59a0c0f'
-      new_commit = 'f50a39051ea8c7f10d6d8db9656658b49601caef'
-      fuzzer = 'rules_fuzzer'
+      project_name = 'usrsctp'
+      old_commit = '4886aaa49fb90e479226fcfc3241d74208908232'
+      new_commit = 'c710749b1053978179a027973a3ea3bccf20ee5c'
+      fuzzer = 'fuzzer_connect'
 
-      yara_repo_manager = repo_manager.RepoManager(
-          'https://github.com/VirusTotal/yara.git', tmp_dir, repo_name='yara')
+      usrsctp_repo_manager = repo_manager.RepoManager(
+          'https://github.com/weinrank/usrsctp',
+          tmp_dir,
+          repo_name=project_name)
       build_data = utils.BuildData(sanitizer='address',
-                                                    architecture='x86_64',
-                                                    engine='libfuzzer',
-                                                    project_name='yara')
+                                   architecture='x86_64',
+                                   engine='libfuzzer',
+                                   project_name=project_name)
 
-      utils.build_fuzzers_from_commit(old_commit,
-                                                       yara_repo_manager,
-                                                       build_data)
+      utils.build_fuzzers_from_commit(old_commit, usrsctp_repo_manager,
+                                      build_data)
       old_error_code = helper.reproduce_impl(project_name, fuzzer, False, [],
                                              [], test_data)
-      utils.build_fuzzers_from_commit(new_commit,
-                                                       yara_repo_manager,
-                                                       build_data)
+      utils.build_fuzzers_from_commit(new_commit, usrsctp_repo_manager,
+                                      build_data)
       new_error_code = helper.reproduce_impl(project_name, fuzzer, False, [],
                                              [], test_data)
       self.assertNotEqual(new_error_code, old_error_code)
@@ -69,17 +69,17 @@ class BuildImageIntegrationTests(unittest.TestCase):
     repo_origin, repo_name = utils.detect_main_repo(
         'curl', commit='bc5d22c3dede2f04870c37aec9a50474c4b888ad')
     self.assertEqual(repo_origin, 'https://github.com/curl/curl.git')
-    self.assertEqual(repo_name, 'curl')
+    self.assertEqual(repo_name, '/src/curl')
 
     repo_origin, repo_name = utils.detect_main_repo(
         'usrsctp', commit='4886aaa49fb90e479226fcfc3241d74208908232')
     self.assertEqual(repo_origin, 'https://github.com/weinrank/usrsctp')
-    self.assertEqual(repo_name, 'usrsctp')
+    self.assertEqual(repo_name, '/src/usrsctp')
 
     repo_origin, repo_name = utils.detect_main_repo(
         'ndpi', commit='c4d476cc583a2ef1e9814134efa4fbf484564ed7')
     self.assertEqual(repo_origin, 'https://github.com/ntop/nDPI.git')
-    self.assertEqual(repo_name, 'ndpi')
+    self.assertEqual(repo_name, '/src/ndpi')
 
     repo_origin, repo_name = utils.detect_main_repo(
         'notproj', commit='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
@@ -88,25 +88,22 @@ class BuildImageIntegrationTests(unittest.TestCase):
 
   def test_detect_main_repo_from_name(self):
     """Test the detect main repo function from build specific commit module."""
-    repo_origin, repo_name = utils.detect_main_repo(
-        'curl', repo_name='curl')
+    repo_origin, repo_name = utils.detect_main_repo('curl', repo_name='curl')
     self.assertEqual(repo_origin, 'https://github.com/curl/curl.git')
-    self.assertEqual(repo_name, 'curl')
+    self.assertEqual(repo_name, '/src/curl')
 
-    repo_origin, repo_name = utils.detect_main_repo(
-        'yara', repo_name='yara')
+    repo_origin, repo_name = utils.detect_main_repo('yara', repo_name='yara')
     self.assertEqual(repo_origin, 'https://github.com/VirusTotal/yara.git')
-    self.assertEqual(repo_name, 'yara')
+    self.assertEqual(repo_name, '/src/yara')
 
-    repo_origin, repo_name = utils.detect_main_repo(
-        'usrsctp', repo_name='usrsctp')
+    repo_origin, repo_name = utils.detect_main_repo('usrsctp',
+                                                    repo_name='usrsctp')
     self.assertEqual(repo_origin, 'https://github.com/weinrank/usrsctp')
-    self.assertEqual(repo_name, 'usrsctp')
+    self.assertEqual(repo_name, '/src/usrsctp')
 
-    repo_origin, repo_name = utils.detect_main_repo(
-        'ndpi', repo_name='nDPI')
+    repo_origin, repo_name = utils.detect_main_repo('ndpi', repo_name='nDPI')
     self.assertEqual(repo_origin, 'https://github.com/ntop/nDPI.git')
-    self.assertEqual(repo_name, 'ndpi')
+    self.assertEqual(repo_name, '/src/ndpi')
 
     repo_origin, repo_name = utils.detect_main_repo(
         'notproj', repo_name='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
